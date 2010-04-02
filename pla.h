@@ -34,6 +34,9 @@ struct task {
 	time_t start;
 	unsigned int duration;
 
+	/* avancement */
+	unsigned int percent;
+
 	/* dependances */
 	int ndep;
 	struct task **deps;
@@ -56,6 +59,8 @@ int pla_task_set_duration_sh(struct task *task, const char *duration);
 void pla_task_set_duration_d(struct task *task, unsigned int duration);
 int pla_task_set_duration_sd(struct task *task, const char *duration);
 void pla_task_set_color(struct task *task, const char *color);
+void pla_task_set_percent(struct task *task, unsigned int percent);
+int pla_task_set_percent_s(struct task *task, const char *percent);
 void pla_task_add_child(struct task *task, struct task *child);
 void pla_task_add_dep(struct task *task, struct task *dep);
 void pla_task_del_child(struct task *child);

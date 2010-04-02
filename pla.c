@@ -176,6 +176,25 @@ int pla_task_set_duration_sd(struct task *task, const char *duration)
 	return 0;
 }
 
+void pla_task_set_percent(struct task *task, unsigned int percent)
+{
+	if (percent > 100)
+		percent = 100;
+	task->percent = percent;
+}
+
+int pla_task_set_percent_s(struct task *task, const char *percent)
+{
+	int d;
+	d = conv(percent, strlen(percent));
+	if (d < 0)
+		return -1;
+	if (d > 100)
+		d = 100;
+	pla_task_set_percent(task, (unsigned int)d);
+	return 0;
+}
+
 void pla_task_add_child(struct task *task, struct task* child)
 {
 	list_add_tail(&child->_child, &task->childs);
