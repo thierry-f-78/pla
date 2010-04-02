@@ -184,7 +184,7 @@ void pla_task_add_child(struct task *task, struct task* child)
 
 void pla_task_add_dep(struct task *task, struct task* dep)
 {
-	task->deps = realloc(task->deps, task->ndep + 1);
+	task->deps = realloc(task->deps, ( task->ndep + 1 ) * sizeof(struct task*));
 	if (task->deps == NULL) {
 		fprintf(stderr, "realloc error");
 		exit(1);
