@@ -49,11 +49,13 @@ struct task *pla_task_new(struct list_head *base, const char *name, const char *
 void pla_task_set_start(struct task *task, time_t start);
 int pla_task_set_start_ymd(struct task *task, const char *start);
 int pla_task_set_start_ymdh(struct task *task, const char *start);
+int pla_task_set_start_ymdhh(struct task *task, const char *start);
 void pla_task_set_duration(struct task *task, unsigned int duration);
 void pla_task_set_duration_h(struct task *task, unsigned int duration);
 int pla_task_set_duration_sh(struct task *task, const char *duration);
 void pla_task_set_duration_d(struct task *task, unsigned int duration);
 int pla_task_set_duration_sd(struct task *task, const char *duration);
+void pla_task_set_color(struct task *task, const char *color);
 void pla_task_add_child(struct task *task, struct task *child);
 void pla_task_add_dep(struct task *task, struct task *dep);
 void pla_task_del_child(struct task *child);
@@ -61,5 +63,6 @@ void pla_task_del_dep(struct task *dep);
 int pla_task_get_level(struct task *task);
 int pla_task_get_order(struct list_head *base, struct task *t);
 void pla_task_update_date(struct task *task);
+struct task *pla_task_get_by_id(struct list_head *base, int id);
 
 #endif /* __PLA_H__ */

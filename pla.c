@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -110,6 +111,36 @@ int pla_task_set_start_ymdh(struct task *task, const char *start)
 	return 0;
 }
 
+int pla_task_set_start_ymdhh(struct task *task, const char *start)
+{
+	struct tm tm;
+
+	memset(&tm, 0, sizeof(struct tm));
+
+	if (start[4] != '-' || start[7] != '-' || start[10] != ' ')
+		return -1;
+
+	tm.tm_year = conv(start, 4) - 1900;
+	if (tm.tm_year < 0)
+		return -1;
+           
+	tm.tm_mon = conv(start + 5, 2) - 1;
+	if (tm.tm_mon < 0)
+		return -1;
+
+	tm.tm_mday = conv(start + 8, 2);
+	if (tm.tm_mday < 0)
+		return -1;
+
+	tm.tm_hour = conv(start + 11, 2);
+	if (tm.tm_mday < 0)
+		return -1;
+
+	task->start = mktime(&tm);
+
+	return 0;
+}
+
 void pla_task_set_duration(struct task *task, unsigned int duration)
 {
 	task->duration = duration;
@@ -154,6 +185,10 @@ void pla_task_add_child(struct task *task, struct task* child)
 void pla_task_add_dep(struct task *task, struct task* dep)
 {
 	task->deps = realloc(task->deps, task->ndep + 1);
+	if (task->deps == NULL) {
+		fprintf(stderr, "realloc error");
+		exit(1);
+	}
 	task->deps[task->ndep] = dep;	
 	task->ndep++;
 }
@@ -211,4 +246,19 @@ int pla_task_get_level(struct task *t)
 		/* search parent */
 		t = t->parent;
 	}
+}
+void pla_task_set_color(struct task *task, const char *color)
+{
+	convert_rgba_hex(color, 0xff, &task->color);
+	 
+}
+struct task *pla_task_get_by_id(struct list_head *base, int id)
+{
+	struct task *t;
+
+	list_for_each_entry(t, base, c) {
+		if (t->id == id)
+			return t;
+	}
+	return NULL;
 }

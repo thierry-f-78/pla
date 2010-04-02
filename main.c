@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "pla.h"
+#include "load.h"
 #include "render.h"
 
 int main(int argc, char *argv[])
@@ -13,6 +14,10 @@ int main(int argc, char *argv[])
 	struct list_head base = LIST_HEAD_INIT(base);
 	struct task *t;
 	time_t max;
+
+	pla_load(&base, "out.pla");
+
+/*
 	struct task *ref0_1;
 	struct task *ref0_2;
 	struct task *ref0_3;
@@ -50,7 +55,6 @@ int main(int argc, char *argv[])
 	struct task *ref2_6;
 	struct task *ref2;
 
-
 	ref0 = pla_task_new(&base, "REF0 Install des serveurs", NULL, 0, 0);
 
 	ref0_1 = pla_task_new(&base, "REF0 Install 1", NULL, 0, 0);
@@ -75,6 +79,7 @@ int main(int argc, char *argv[])
 	ref8_1 = pla_task_new(&base, "REF8 Etude", NULL, 0, 0);
 	pla_task_set_start_ymd(ref8_1, "20100401");
 	pla_task_set_duration_sd(ref8_1, "1");
+	pla_task_set_color(ref8_1, "#00CC00");
 
 	ref8_2 = pla_task_new(&base, "REF8 Config 1", NULL, 0, 0);
 	pla_task_set_start_ymd(ref8_2, "20100409");
@@ -104,6 +109,7 @@ int main(int argc, char *argv[])
 	ref6_1 = pla_task_new(&base, "REF6 Etude", NULL, 0, 0);
 	pla_task_set_start_ymd(ref6_1, "20100422");
 	pla_task_set_duration_sd(ref6_1, "1");
+	pla_task_set_color(ref6_1, "#00CC00");
 
 	ref6_2 = pla_task_new(&base, "REF6 Config 1", NULL, 0, 0);
 	pla_task_set_start_ymd(ref6_2, "20100423");
@@ -133,6 +139,7 @@ int main(int argc, char *argv[])
 	ref9_1 = pla_task_new(&base, "REF9 Etude", NULL, 0, 0);
 	pla_task_set_start_ymd(ref9_1, "20100506");
 	pla_task_set_duration_sd(ref9_1, "1");
+	pla_task_set_color(ref9_1, "#00CC00");
 
 	ref9_2 = pla_task_new(&base, "REF9 Config 1", NULL, 0, 0);
 	pla_task_set_start_ymd(ref9_2, "20100507");
@@ -162,6 +169,7 @@ int main(int argc, char *argv[])
 	ref7_1 = pla_task_new(&base, "REF7 Etude", NULL, 0, 0);
 	pla_task_set_start_ymd(ref7_1, "20100527");
 	pla_task_set_duration_sd(ref7_1, "1");
+	pla_task_set_color(ref7_1, "#00CC00");
 
 	ref7_2 = pla_task_new(&base, "REF7 Config 1", NULL, 0, 0);
 	pla_task_set_start_ymd(ref7_2, "20100528");
@@ -224,7 +232,7 @@ int main(int argc, char *argv[])
 	pla_task_add_child(ref2, ref2_5);
 	pla_task_add_child(ref2, ref2_6);
 
-	/* set dependencies */
+	// set dependencies
 	pla_task_add_dep(ref0_1, ref0_2);
 	pla_task_add_dep(ref0_1, ref8_2);
 	pla_task_add_dep(ref0_2, ref0_3);
@@ -253,6 +261,44 @@ int main(int argc, char *argv[])
 	pla_task_add_dep(ref2_3, ref2_4);
 	pla_task_add_dep(ref2_4, ref2_5);
 	pla_task_add_dep(ref2_5, ref2_6);
+
+	ref0_1->id = 1;
+	ref0_2->id = 2;
+	ref0_3->id = 3;
+	ref0->id = 4;
+	ref8_1->id = 5;
+	ref8_2->id = 6;
+	ref8_3->id = 7;
+	ref8_4->id = 8;
+	ref8_5->id = 9;
+	ref8->id = 10;
+	ref6_1->id = 11;
+	ref6_2->id = 12;
+	ref6_3->id = 13;
+	ref6_4->id = 14;
+	ref6_5->id = 15;
+	ref6->id = 16;
+	ref9_1->id = 17;
+	ref9_2->id = 18;
+	ref9_3->id = 19;
+	ref9_4->id = 20;
+	ref9_5->id = 21;
+	ref9->id = 22;
+	ref7_1->id = 23;
+	ref7_2->id = 24;
+	ref7_3->id = 25;
+	ref7_4->id = 26;
+	ref7_5->id = 27;
+	ref7_6->id = 28;
+	ref7->id = 29;
+	ref2_1->id = 30;
+	ref2_2->id = 31;
+	ref2_3->id = 32;
+	ref2_4->id = 33;
+	ref2_5->id = 34;
+	ref2_6->id = 35;
+	ref2->id = 36;
+	*/
 
 	/* recherche la date la plus petite */
 	d.start = -1;
@@ -286,6 +332,11 @@ int main(int argc, char *argv[])
 	d.duration = max - d.start;
 	d.base = &base;
 
+//	d.start = 1272664800;
+//	d.duration = 2678400;
+//	d.start = 1275602400;
+//	d.duration = 2678400;
+
 	if (argc < 2) {
 		out = "pla.png";
 		mode = 1;
@@ -307,5 +358,6 @@ int main(int argc, char *argv[])
 	}
 
 	pla_draw(mode, out, &d);
+//	pla_store(&base, "out.pla");
 	return 0;
 }
