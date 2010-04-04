@@ -204,6 +204,18 @@ void pla_load(struct list_head *base, const char *file)
 			pla_task_set_color(t, value);
 		}
 
+		/* percent */
+		else if (strcmp(attr, "percent") == 0) {
+			if (t == NULL) {
+				fprintf(stderr, "bad file format at line %d: task expected\n", line);
+				exit(1);
+			}
+			if (pla_task_set_percent_s(t, value) < 0) {
+				fprintf(stderr, "bad file format at line %d: bad percent\n", line);
+				exit(1);
+			}
+		}
+
 		/* fils */
 		else if (strcmp(attr, "child") == 0) {
 			if (t == NULL) {
@@ -266,6 +278,9 @@ void pla_store(struct list_head *base, const char *file)
 
 		/* save duration */
 		fprintf(fp, "\tduration %d\n", t->duration / 3600);
+
+		/* save percent */
+		fprintf(fp, "\tpercent %u\n", t->percent);
 
 		/* save color */
 		fprintf(fp, "\tcolor #%02x%02x%02x\n", 
