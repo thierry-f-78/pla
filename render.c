@@ -47,8 +47,18 @@ struct color black_50p  = {
 	0.0f,
 	0.5f
 };
-struct color black  = { 0, 0, 0, 1 };
-struct color white  = { 1, 1, 1, 1 };
+struct color black  = {
+	0.0f,
+	0.0f,
+	0.0f,
+	1.0f
+};
+struct color white  = {
+	1.0f,
+	1.0f,
+	1.0f,
+	1.0f
+};
 
 static
 void pla_cairo_day_ferie(cairo_t *c, int ps, struct disp *d)
