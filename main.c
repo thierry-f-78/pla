@@ -72,6 +72,10 @@ int main(int argc, char *argv[])
 			mode = 3;
 		else if (strcasecmp(p, ".pdf") == 0)
 			mode = 4;
+		else {
+			fprintf(stderr, "Unknown extension file\n");
+			exit(1);
+		}
 	}
 
 	pla_draw(mode, out, &d);
