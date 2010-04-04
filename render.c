@@ -304,13 +304,6 @@ void pla_cairo_task(cairo_t *c, int ps, struct task *t, struct disp *d)
 		y1 = ps + TASK_BORD;
 		y2 = ps + DAY_H - TASK_BORD;
 
-		/* percent */
-		px1 = x1;
-		px2 = x1 + ( ( x2 - x1 ) * t->percent / 100.0f );
-		m = y2 - y1;
-		py1 = y1 + ( m * PERCENT_DECAL );
-		py2 = y2 - ( m * PERCENT_DECAL );
-
 		/* draw carré */
 		cairo_new_path(c);
 		cairo_move_to(c, x1, y1);
@@ -321,15 +314,26 @@ void pla_cairo_task(cairo_t *c, int ps, struct task *t, struct disp *d)
 		cairo_set_source_col(c, &t->color);
 		cairo_fill(c);
 
-		/* draw percent */
-		cairo_new_path(c);
-		cairo_move_to(c, px1, py1);
-		cairo_line_to(c, px2, py1);
-		cairo_line_to(c, px2, py2);
-		cairo_line_to(c, px1, py2);
-		cairo_line_to(c, px1, py1);
-		cairo_set_source_col(c, &black_50p);
-		cairo_fill(c);
+		if (t->percent > 0) {
+
+			/* percent */
+			px1 = x1;
+			px2 = x1 + ( ( x2 - x1 ) * t->percent / 100.0f );
+			m = y2 - y1;
+			py1 = y1 + ( m * PERCENT_DECAL );
+			py2 = y2 - ( m * PERCENT_DECAL );
+
+			/* draw percent */
+			cairo_new_path(c);
+			cairo_move_to(c, px1, py1);
+			cairo_line_to(c, px2, py1);
+			cairo_line_to(c, px2, py2);
+			cairo_line_to(c, px1, py2);
+			cairo_line_to(c, px1, py1);
+			cairo_set_source_col(c, &black_50p);
+			cairo_fill(c);
+
+		}
 
 		/* draw black border */
 		cairo_new_path(c);
