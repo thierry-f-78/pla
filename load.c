@@ -93,7 +93,6 @@ void pla_load(struct list_head *base, const char *file)
 				fprintf(stderr, "bad file format at line %d: number expected\n", line);
 				exit(1);
 			}
-			printf("add node %d \"%s\"\n", t->id, t->name);
 		}
 	}
 
