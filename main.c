@@ -64,13 +64,13 @@ int main(int argc, char *argv[])
 		p = strchr(out, '.');
 		if (p == NULL)
 			mode = 1; 
-		else if (strcmp(p, ".png") == 0)
+		else if (strcasecmp(p, ".png") == 0)
 			mode = 1;
-		else if (strcmp(p, ".eps") == 0)
+		else if (strcasecmp(p, ".eps") == 0)
 			mode = 2;
-		else if (strcmp(p, ".svg") == 0)
+		else if (strcasecmp(p, ".svg") == 0)
 			mode = 3;
-		else if (strcmp(p, ".pdf") == 0)
+		else if (strcasecmp(p, ".pdf") == 0)
 			mode = 4;
 	}
 
