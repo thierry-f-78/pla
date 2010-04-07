@@ -6,7 +6,6 @@
 #include "utils.h"
 #include "pla.h"
 
-static inline
 int conv(const char *in, int len)
 {
 	char buf[20];

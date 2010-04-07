@@ -70,4 +70,7 @@ int pla_task_get_order(struct list_head *base, struct task *t);
 void pla_task_update_date(struct task *task);
 struct task *pla_task_get_by_id(struct list_head *base, int id);
 
+/* utils */
+int conv(const char *in, int len);
+
 #endif /* __PLA_H__ */
