@@ -50,7 +50,9 @@ int main(int argc, char *argv[])
 	int i;
 	time_t start = -1;
 	time_t end = -1;
-	int id = -1;
+	int nid = 0;
+	int *id = NULL;
+	int tmp;
 
 	/* argument parser */
 	for (i=1; i<argc; i++) {
@@ -136,12 +138,17 @@ int main(int argc, char *argv[])
 				usage();
 				exit(1);
 			}
-			id = conv(argv[i], strlen(argv[i]));
-			if (id == -1) {
+			tmp = conv(argv[i], strlen(argv[i]));
+			if (tmp == -1) {
 				fprintf(stderr, "\nargument -i: invalid id\n");
 				usage();
 				exit(1);
 			}
+
+			/* add id */
+			id = realloc(id, (nid+1)*sizeof(int));
+			id[nid] = tmp;
+			nid++;
 		}
 
 		/* help */
@@ -207,6 +214,35 @@ int main(int argc, char *argv[])
 	d.duration = max - d.start;
 	d.base = &base;
 
+	/* if id s known */
+	if (nid > 0) {
+		start = -1;
+		end = -1;
+
+		for (i=0; i<nid; i++) {
+
+			t = pla_task_get_by_id(&base, id[i]);
+			if (t == NULL) {
+				fprintf(stderr, "\nunknown id\n");
+				usage();
+				exit(1);
+			}
+			pla_task_update_date(t);
+
+			if (start == -1)
+				start = t->start;
+
+			else if (start > t->start)
+				start = t->start;
+
+			if (end == -1)
+				end = t->start + t->duration;
+
+			else if (end < t->start + t->duration)
+				end = t->start + t->duration;
+		}
+	}
+
 	/* if start is set */
 	if (start != -1)
 		d.start = start;
@@ -215,18 +251,7 @@ int main(int argc, char *argv[])
 	if (end != -1)
 		d.duration = end - d.start;
 
-	/* if id known */
-	if (id != -1) {
-		t = pla_task_get_by_id(&base, id);
-		if (t == NULL) {
-			fprintf(stderr, "\nunknown id\n");
-			usage();
-			exit(1);
-		}
-		d.start = t->start;
-		d.duration = t->duration;
-	}
-
+	/* auto select mode if needed */
 	if (mode == 0) {
 		p = strchr(out, '.');
 		if (p == NULL)
