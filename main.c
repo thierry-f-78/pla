@@ -11,7 +11,7 @@ void usage(void) {
 	fprintf(stderr,
 		"\n"
 		"pla -i <filename> -o <filename> [-f (eps|png|svg|pdf)]\n"
-		"    [-s yyyymmdd] [-e yyyymmdd]\n"
+		"    [-s yyyymmdd] [-e yyyymmdd] [-id task_id]\n"
 		"\n"
 	);
 }
@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
 	int i;
 	time_t start = -1;
 	time_t end = -1;
+	int id = -1;
 
 	/* argument parser */
 	for (i=1; i<argc; i++) {
@@ -127,8 +128,31 @@ int main(int argc, char *argv[])
 				mode = 4;
 		}
 
+		/* task id */
+		else if (strcmp(argv[i], "-id") == 0) {
+			i++;
+			if (i == argc) {
+				fprintf(stderr, "\nargument -i expect id\n");
+				usage();
+				exit(1);
+			}
+			id = conv(argv[i], strlen(argv[i]));
+			if (id == -1) {
+				fprintf(stderr, "\nargument -i: invalid id\n");
+				usage();
+				exit(1);
+			}
+		}
+
 		/* help */
 		else if (strcmp(argv[i], "-h") == 0) {
+			usage();
+			exit(0);
+		}
+
+		/* help */
+		else {
+			fprintf(stderr, "\nunknown argument\n");
 			usage();
 			exit(0);
 		}
@@ -150,7 +174,6 @@ int main(int argc, char *argv[])
 
 	/* loda planning */
 	pla_load(&base, in);
-
 
 	/* recherche la date la plus petite */
 	d.start = -1;
@@ -184,11 +207,25 @@ int main(int argc, char *argv[])
 	d.duration = max - d.start;
 	d.base = &base;
 
+	/* if start is set */
 	if (start != -1)
 		d.start = start;
 	
+	/* if end is set */
 	if (end != -1)
 		d.duration = end - d.start;
+
+	/* if id known */
+	if (id != -1) {
+		t = pla_task_get_by_id(&base, id);
+		if (t == NULL) {
+			fprintf(stderr, "\nunknown id\n");
+			usage();
+			exit(1);
+		}
+		d.start = t->start;
+		d.duration = t->duration;
+	}
 
 	if (mode == 0) {
 		p = strchr(out, '.');

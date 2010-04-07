@@ -630,8 +630,17 @@ void pla_draw(int mode, const char *file_out, struct disp *d)
 	pla_cairo_months(c, d);
 	pla_cairo_days(c, d);
 	pla_cairo_heads(c, d);
+
+	/* clip drwing zone */
+	cairo_rectangle(c, HDR_W, HDR_MH + HDR_DH, d->w, d->h);
+	cairo_clip(c);
+
+	/*  draw task and dependecies */
 	pla_cairo_tasks(c, d);
 	pla_cairo_arrows(c, d);
+
+	/* unclip */
+	cairo_reset_clip(c);
 
 	/* draw top header black border */
 	cairo_new_path(c);
