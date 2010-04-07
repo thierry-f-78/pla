@@ -53,6 +53,13 @@ struct color black  = {
 	0.0f,
 	1.0f
 };
+struct color white_80p  = {
+	1.0f,
+	1.0f,
+	1.0f,
+	0.8f
+};
+
 struct color white  = {
 	1.0f,
 	1.0f,
@@ -286,6 +293,10 @@ void pla_cairo_task(cairo_t *c, int ps, struct task *t, struct disp *d)
 	double py1;
 	double py2;
 	double m;
+	double x;
+	double y;
+	char buf[10];
+	cairo_text_extents_t exts;
 
 	/* update dates */
 	pla_task_update_date(t);
@@ -330,10 +341,29 @@ void pla_cairo_task(cairo_t *c, int ps, struct task *t, struct disp *d)
 			cairo_line_to(c, px2, py2);
 			cairo_line_to(c, px1, py2);
 			cairo_line_to(c, px1, py1);
-			cairo_set_source_col(c, &black_50p);
+			cairo_set_source_col(c, &black);
 			cairo_fill(c);
 
 		}
+
+		/* select font and get */
+		cairo_select_font_face (c, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+		cairo_set_font_size (c, ( y2 - y1 ) );
+
+		/* compute center of text */
+		snprintf(buf, 10, "%d", t->id);
+		cairo_text_extents (c, buf, &exts);
+		x = x1 + 1.0f;
+		y = ( y1 + ((y2-y1)/2) )  -  ( ( exts.height / 2 ) + exts.y_bearing );
+
+		/* display text */
+		cairo_new_path(c);
+		cairo_move_to(c, x, y);
+		cairo_set_source_col(c, &white);
+		cairo_text_path(c, buf);
+		cairo_fill_preserve(c);
+		cairo_set_source_col(c, &black);
+		cairo_stroke(c);
 
 		/* draw black border */
 		cairo_new_path(c);
