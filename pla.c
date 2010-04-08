@@ -278,5 +278,6 @@ struct task *pla_task_get_by_id(struct list_head *base, int id)
 		if (t->id == id)
 			return t;
 	}
+
 	return NULL;
 }

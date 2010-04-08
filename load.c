@@ -168,6 +168,10 @@ void pla_load(struct list_head *base, const char *file)
 		if (attr[0] == '[') {
 			id = strtol(attr+1, &error, 10);
 			t = pla_task_get_by_id(base, id);
+			if (t == NULL) {
+				fprintf(stderr, "strange error: id does not exists at line %d\n", line);
+				exit(1);
+			}
 		}
 
 		/* date de debut */
@@ -223,6 +227,10 @@ void pla_load(struct list_head *base, const char *file)
 			}
 			id = strtol(value, &error, 10);
 			tt = pla_task_get_by_id(base, id);
+			if (tt == NULL) {
+				fprintf(stderr, "error: child id does not exists at line %d\n", line);
+				exit(1);
+			}
 			pla_task_add_child(t, tt);
 		}
 
@@ -234,6 +242,10 @@ void pla_load(struct list_head *base, const char *file)
 			}
 			id = strtol(value, &error, 10);
 			tt = pla_task_get_by_id(base, id);
+			if (tt == NULL) {
+				fprintf(stderr, "error: dep id does not exists at line %d\n", line);
+				exit(1);
+			}
 			pla_task_add_dep(t, tt);
 		}
 

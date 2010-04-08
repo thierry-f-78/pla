@@ -471,6 +471,11 @@ void pla_cairo_day_feries(cairo_t *c, struct disp *d) {
 		localtime_r(&r, &tm);
 		if (tm.tm_wday == 0 || tm.tm_wday == 6)
 			pla_cairo_day_ferie(c, ps, d);
+
+		/* TODO: a degager: 13 mai 21010 !!! jeudi de l'ascencion */
+		if (tm.tm_mon == 4 && tm.tm_mday == 13)
+			pla_cairo_day_ferie(c, ps, d);
+
 		ps += DAY_W;
 	}
 }
