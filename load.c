@@ -105,6 +105,8 @@ void pla_load(struct list_head *base, const char *file)
 		exit(1);
 	}
 
+	line = 0;
+
 	/* read file */
 	while (1) {
 
