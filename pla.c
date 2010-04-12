@@ -116,6 +116,32 @@ int pla_task_set_start_ymd(struct task *task, const char *start)
 	return 0;
 }
 
+int pla_task_set_start_ymdd(struct task *task, const char *start)
+{
+	struct tm tm;
+
+	if (start[4] != '-' || start[7] != '-')
+		return -1;
+
+	memset(&tm, 0, sizeof(struct tm));
+
+	tm.tm_year = conv(start, 4) - 1900;
+	if (tm.tm_year < 0)
+		return -1;
+
+	tm.tm_mon = conv(start + 5, 2) - 1;
+	if (tm.tm_mon < 0)
+		return -1;
+
+	tm.tm_mday = conv(start + 8, 2);
+	if (tm.tm_mday < 0)
+		return -1;
+
+	task->start = mktime(&tm);
+
+	return 0;
+}
+
 int pla_task_set_start_ymdh(struct task *task, const char *start)
 {
 	struct tm tm;

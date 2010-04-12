@@ -75,6 +75,7 @@ struct task *pla_task_new(struct list_head *base, const char *name, const char *
                           time_t start, unsigned int duration);
 void pla_task_set_start(struct task *task, time_t start);
 int pla_task_set_start_ymd(struct task *task, const char *start);
+int pla_task_set_start_ymdd(struct task *task, const char *start);
 int pla_task_set_start_ymdh(struct task *task, const char *start);
 int pla_task_set_start_ymdhh(struct task *task, const char *start);
 void pla_task_set_duration(struct task *task, unsigned int duration);

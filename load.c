@@ -194,9 +194,19 @@ void pla_load(struct list_head *base, struct list_head *res, const char *file)
 				fprintf(stderr, "bad file format at line %d: task expected\n", line);
 				exit(1);
 			}
-			if (pla_task_set_start_ymdhh(t, value) < 0) {
-				fprintf(stderr, "bad date format at line %d\n", line);
-				exit(1);
+
+			if (strlen(value) > 10 && value[10] == ' ') {
+				if (pla_task_set_start_ymdhh(t, value) < 0) {
+					fprintf(stderr, "bad date format at line %d\n", line);
+					exit(1);
+				}
+			}
+
+			else {
+				if (pla_task_set_start_ymdd(t, value) < 0) {
+					fprintf(stderr, "bad date format at line %d\n", line);
+					exit(1);
+				}
 			}
 		}
 
