@@ -87,12 +87,23 @@ void pla_load(struct list_head *base, const char *file)
 
 		/* nouvelle tache */
 		if (attr[0] == '[') {
-			t = pla_task_new(base, value, NULL, 0, 0);
-			t->id = strtol(attr+1, &error, 10);
+
+			/* convert task id */
+			id = strtol(attr+1, &error, 10);
 			if (*error != ']') {
 				fprintf(stderr, "bad file format at line %d: number expected\n", line);
 				exit(1);
 			}
+
+			/* verif des doublons */
+			if (pla_task_get_by_id(base, id) != NULL) {
+				fprintf(stderr, "task %d, line %d: this id already exists\n", id, line);
+				exit(1);
+			}
+
+			/* add task */
+			t = pla_task_new(base, value, NULL, 0, 0);
+			t->id = id;
 		}
 	}
 
