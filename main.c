@@ -11,7 +11,7 @@ void usage(void) {
 	fprintf(stderr,
 		"\n"
 		"pla -i <filename> -o <filename> [-f (eps|png|svg|pdf)]\n"
-		"    [-s yyyymmdd] [-e yyyymmdd] [-id task_id]\n"
+		"    [-s yyyymmdd] [-e yyyymmdd] [-id task_id] [-oid task_id]\n"
 		"\n"
 	);
 }
@@ -37,6 +37,22 @@ time_t convert_yyymmdd(const char *date)
 	return mktime(&tm);
 }
 
+static inline
+void oid_add(int **oid, int *noid, int id)
+{
+	int i;
+
+	/* check if exists */
+	for (i=0; i<(*noid); i++)
+		if ((*oid)[i] == id)
+			return;
+
+	/* add */
+	(*oid) = realloc((*oid), ((*noid)+1)*sizeof(int));
+	(*oid)[(*noid)] = id;
+	(*noid)++;
+}
+
 int main(int argc, char *argv[])
 {
 	const char *out = NULL;
@@ -47,13 +63,21 @@ int main(int argc, char *argv[])
 	struct list_head base = LIST_HEAD_INIT(base);
 	struct list_head res = LIST_HEAD_INIT(res);
 	struct task *t;
+	struct task *tt;
+	struct res *r;
+	struct res *rr;
 	time_t max;
 	int i;
 	time_t start = -1;
 	time_t end = -1;
 	int nid = 0;
 	int *id = NULL;
+	int noid = 0;
+	int *oid = NULL;
 	int tmp;
+	int ok;
+
+	d.display_res = 0;
 
 	/* argument parser */
 	for (i=1; i<argc; i++) {
@@ -152,6 +176,32 @@ int main(int argc, char *argv[])
 			nid++;
 		}
 
+		/* task id */
+		else if (strcmp(argv[i], "-oid") == 0) {
+			i++;
+			if (i == argc) {
+				fprintf(stderr, "\nargument -oid expect id\n");
+				usage();
+				exit(1);
+			}
+			tmp = conv(argv[i], strlen(argv[i]));
+			if (tmp == -1) {
+				fprintf(stderr, "\nargument -oid: invalid id\n");
+				usage();
+				exit(1);
+			}
+
+			/* add oid */
+			oid = realloc(oid, (noid+1)*sizeof(int));
+			oid[noid] = tmp;
+			noid++;
+		}
+
+		/* display resource */
+		else if (strcmp(argv[i], "-res") == 0) {
+			d.display_res = 1;
+		}
+
 		/* help */
 		else if (strcmp(argv[i], "-h") == 0) {
 			usage();
@@ -182,6 +232,39 @@ int main(int argc, char *argv[])
 
 	/* loda planning */
 	pla_load(&base, &res, in);
+
+	/* oid */
+	if (noid > 0) {
+
+		/* check childs */
+		list_for_each_entry(t, &base, c)
+			for (i=0; i<noid; i++)
+				if (t->id == oid[i])
+					list_for_each_entry(tt, &t->childs, _child)
+						oid_add(&oid, &noid, tt->id);
+
+		/* delete task */
+		list_for_each_entry_safe(t, tt, &base, c) {
+			ok = 0;
+			for (i=0; i<noid; i++)
+				if (t->id == oid[i])
+					ok = 1;
+			if (ok == 1)
+				continue;
+			list_del(&t->c);
+		}
+
+		/* remove res */
+		list_for_each_entry_safe(r, rr, &res, c) {
+			ok = 0;
+			list_for_each_entry(t, &base, c)
+				for (i=0; i<t->nres; i++)
+					if (t->res[i] == r)
+						ok = 1;
+			if (ok == 0)
+				list_del(&r->c);
+		}
+	}
 
 	/* recherche la date la plus petite */
 	d.start = -1;
