@@ -21,6 +21,7 @@
 #define TASK_BORD 3.0f
 #define NAME_TAB 20.0f
 #define PERCENT_DECAL 0.3f
+#define SPACE 10.0f
 
 /* #EDEDED */
 struct color lgray1 = {
@@ -41,7 +42,15 @@ struct color lgray3 = {
 	0.48235294117647058823f,
 	1
 };
-struct color black_50p  = {
+
+/* 8CB6CE */
+struct color defcol = {
+	0.54901960784313725490f,
+	0.71372549019607843137f,
+	0.80784313725490196078f,
+	1
+};
+struct color black_50p = {
 	0.0f,
 	0.0f,
 	0.0f,
@@ -70,12 +79,21 @@ struct color white = {
 static
 void pla_cairo_day_ferie(cairo_t *c, int ps, struct disp *d)
 {
-	/* colonne grise */
+	/* colonne grise top */
 	cairo_new_path(c);
 	cairo_move_to(c, ps, HDR_MH + HDR_DH);
-	cairo_line_to(c, ps, HDR_MH + HDR_DH + d->h);
-	cairo_line_to(c, ps + DAY_W, HDR_MH + HDR_DH + d->h);
+	cairo_line_to(c, ps, d->h1);
+	cairo_line_to(c, ps + DAY_W, d->h1);
 	cairo_line_to(c, ps + DAY_W, HDR_MH + HDR_DH);
+	cairo_set_source_col(c, &lgray1);
+	cairo_fill(c);
+
+	/* colonne grise bottom */
+	cairo_new_path(c);
+	cairo_move_to(c, ps, d->rs);
+	cairo_line_to(c, ps, d->rs + d->h2);
+	cairo_line_to(c, ps + DAY_W, d->rs + d->h2);
+	cairo_line_to(c, ps + DAY_W, d->rs);
 	cairo_set_source_col(c, &lgray1);
 	cairo_fill(c);
 }
@@ -140,7 +158,14 @@ void pla_cairo_day(cairo_t *c, int ps, int day, struct disp *d)
 	/* vrule */
 	cairo_new_path(c);
 	cairo_move_to(c, ps + DAY_W, HDR_MH + HDR_DH);
-	cairo_line_to(c, ps + DAY_W, d->h);
+	cairo_line_to(c, ps + DAY_W, d->h1);
+	cairo_set_source_col(c, &lgray2);
+	cairo_stroke(c);
+
+	/* vrule */
+	cairo_new_path(c);
+	cairo_move_to(c, ps + DAY_W, d->rs);
+	cairo_line_to(c, ps + DAY_W, d->rs + d->h2);
 	cairo_set_source_col(c, &lgray2);
 	cairo_stroke(c);
 
@@ -461,6 +486,125 @@ void pla_cairo_arrow(cairo_t *c, int ps, struct task *t, struct disp *d)
 }
 
 static
+void pla_cairo_res_head(cairo_t *c, int ps, struct res *r, struct disp *d)
+{
+	cairo_text_extents_t exts;
+	double x;
+	double y;
+
+	/* draw black separation */
+	cairo_new_path(c);
+	cairo_move_to(c, 0, ps + DAY_H);
+	cairo_line_to(c, HDR_W, ps + DAY_H);
+	cairo_set_source_col(c, &black);
+	cairo_stroke(c);
+
+	/* hrule */
+	cairo_new_path(c);
+	cairo_move_to(c, HDR_W, ps + DAY_H);
+	cairo_line_to(c, d->w, ps + DAY_H);
+	cairo_set_source_col(c, &lgray2);
+	cairo_stroke(c);
+
+	/* select font and get */
+	cairo_select_font_face (c, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+	cairo_set_font_size (c, FONT_SIZE);
+
+	/*
+	 *
+	 * ^        |           +-----+
+	 * |        |           |     |
+	 * |        | bearing   |     |
+	 * |        |           |     |
+	 * | height |           |     |
+	 * |        v     (x,y) +-----+
+	 * |                    |
+	 * |                    |
+	 * |                    |
+	 *
+	 */
+
+	/* compute center of text */
+	cairo_text_extents (c, r->name, &exts);
+	x = 2;
+	y = ( ps + ( DAY_H / 2 ) )  -  ( ( exts.height / 2 ) + exts.y_bearing );
+
+	/* clipping zone */
+	cairo_rectangle(c, 0, ps, HDR_W, ps + DAY_H);
+	cairo_clip(c);
+
+	/* display text */
+	cairo_new_path(c);
+	cairo_move_to(c, x, y);
+	cairo_set_source_col(c, &black);
+	cairo_show_text(c, r->name);
+	cairo_stroke(c);
+
+	/* end of clip */
+	cairo_reset_clip(c);
+
+}
+
+void pla_cairo_disp_res(cairo_t *c, int ps, struct res *r, struct disp *d)
+{
+	struct task *t;
+	double x1;
+	double x2;
+	double y1;
+	double y2;
+	int ok = 0;
+	int i;
+
+	list_for_each_entry(t, d->base, c) {
+
+		/* doit on afficher */
+		ok = 0;
+		for (i=0; i<t->nres; i++)
+			if (t->res[i] == r) {
+				ok = 1;
+				break;
+			}
+		if (ok == 0)
+			continue;
+
+		/* update dates */
+		pla_task_update_date(t);
+
+		/* affiche - t - on ? */
+		if ( !( (t->start >= d->start && t->start <= d->start + d->duration) ||
+		        (t->start + t->duration >= d->start && t->start + t->duration <= d->start + d->duration) ) )
+			continue;
+
+		/* calcule le départ */
+		x1 = HDR_W + ( (t->start - d->start) / 86400 * DAY_W );
+		x2 = HDR_W + ( (( t->start + t->duration ) - d->start) / 86400 * DAY_W );
+		y1 = ps + TASK_BORD;
+		y2 = ps + DAY_H - TASK_BORD;
+
+		/* draw carré */
+		cairo_new_path(c);
+		cairo_move_to(c, x1, y1);
+		cairo_line_to(c, x2, y1);
+		cairo_line_to(c, x2, y2);
+		cairo_line_to(c, x1, y2);
+		cairo_line_to(c, x1, y1);
+		cairo_set_source_col(c, &defcol);
+		cairo_fill(c);
+
+		/* draw black border */
+		cairo_new_path(c);
+		cairo_move_to(c, x1, y1);
+		cairo_line_to(c, x2, y1);
+		cairo_line_to(c, x2, y2);
+		cairo_line_to(c, x1, y2);
+		cairo_line_to(c, x1, y1);
+		cairo_set_source_col(c, &black);
+		cairo_stroke(c);
+
+	}
+}
+
+static
 void pla_cairo_day_feries(cairo_t *c, struct disp *d) {
 	time_t r;
 	int ps;
@@ -528,12 +672,19 @@ void pla_cairo_months(cairo_t *c, struct disp *d) {
 static
 void pla_cairo_heads(cairo_t *c, struct disp *d) {
 	struct task *t;
+	struct res *r;
 	int ps;
 
 	/* compte le nombre d'éléments a afficher */
 	ps = HDR_DH + HDR_MH;
 	list_for_each_entry(t, d->base, c) {
 		pla_cairo_head(c, ps, t, d);
+		ps += DAY_H;
+	}
+
+	ps = d->rs;
+	list_for_each_entry(r, d->res, c) {
+		pla_cairo_res_head(c, ps, r, d);
 		ps += DAY_H;
 	}
 }
@@ -564,22 +715,44 @@ void pla_cairo_arrows(cairo_t *c, struct disp *d) {
 	}
 }
 
+void pla_cairo_res(cairo_t *c, struct disp *d) {
+	struct res *r;
+	int ps;
+
+	/* compte le nombre d'éléments a afficher */
+	ps = d->rs;
+	list_for_each_entry(r, d->res, c) {
+		pla_cairo_disp_res(c, ps, r, d);
+		ps += DAY_H;
+	}
+}
+
 void pla_draw(int mode, const char *file_out, struct disp *d)
 {
 	cairo_surface_t *s;
 	cairo_t *c;
 	FILE *out;
 	int nb;
+	int nb2;
 	struct task *t;
+	struct res *r;
 
 	/* compte le nombre d'éléments a afficher */
 	nb = 0;
 	list_for_each_entry(t, d->base, c)
 		nb++;
 
+	/* compte le nombre de resources */
+	nb2 = 0;
+	list_for_each_entry(r, d->res, c)
+		nb2++;
+
 	/* calcule X et Y */
 	d->w = ( ( d->duration / 86400 ) * DAY_W ) + HDR_W;
-	d->h = ( nb *  DAY_H ) + HDR_DH + HDR_MH;
+	d->h = ( nb *  DAY_H ) + HDR_DH + HDR_MH + SPACE + ( nb2 * DAY_H);
+	d->h1 = ( nb *  DAY_H ) + HDR_DH + HDR_MH;
+	d->rs = ( nb *  DAY_H ) + HDR_DH + HDR_MH + SPACE;
+	d->h2 = ( nb2 * DAY_H);
 
 	/* open output file */
 	if (strcmp(file_out, "-") == 0)
@@ -651,12 +824,21 @@ void pla_draw(int mode, const char *file_out, struct disp *d)
 	cairo_set_source_col(c, &lgray2);
 	cairo_fill(c);
 
-	/* draw left header background */
+	/* draw left header background top */
 	cairo_new_path(c);
-	cairo_move_to(c, 0,     d->h);
+	cairo_move_to(c, 0,     d->h1);
 	cairo_line_to(c, 0,     HDR_MH + HDR_DH);
 	cairo_line_to(c, HDR_W, HDR_MH + HDR_DH);
-	cairo_line_to(c, HDR_W, d->h);
+	cairo_line_to(c, HDR_W, d->h1);
+	cairo_set_source_col(c, &lgray1);
+	cairo_fill(c);
+
+	/* draw left header background bottom */
+	cairo_new_path(c);
+	cairo_move_to(c, 0,     d->rs + d->h2);
+	cairo_line_to(c, 0,     d->rs);
+	cairo_line_to(c, HDR_W, d->rs);
+	cairo_line_to(c, HDR_W, d->rs + d->h2);
 	cairo_set_source_col(c, &lgray1);
 	cairo_fill(c);
 
@@ -666,13 +848,23 @@ void pla_draw(int mode, const char *file_out, struct disp *d)
 	pla_cairo_days(c, d);
 	pla_cairo_heads(c, d);
 
-	/* clip drwing zone */
-	cairo_rectangle(c, HDR_W, HDR_MH + HDR_DH, d->w, d->h);
+	/* clip drawing zone */
+	cairo_rectangle(c, HDR_W, HDR_MH + HDR_DH, d->w, d->h1);
 	cairo_clip(c);
 
 	/*  draw task and dependecies */
 	pla_cairo_tasks(c, d);
 	pla_cairo_arrows(c, d);
+
+	/* unclip */
+	cairo_reset_clip(c);
+
+	/* clip drawing zone */
+	cairo_rectangle(c, HDR_W, HDR_MH + HDR_DH, d->w, d->rs + d->h2);
+	cairo_clip(c);
+
+	/* draw ersources */
+	pla_cairo_res(c, d);
 
 	/* unclip */
 	cairo_reset_clip(c);
@@ -693,13 +885,29 @@ void pla_draw(int mode, const char *file_out, struct disp *d)
 	cairo_set_source_col(c, &black);
 	cairo_stroke(c);
 
-	/* braw left header black border */
+	/* draw left header black border top */
 	cairo_new_path(c);
-	cairo_move_to(c, 0,     d->h);
+	cairo_move_to(c, 0,     d->h1);
 	cairo_line_to(c, 0,     HDR_MH + HDR_DH);
 	cairo_line_to(c, HDR_W, HDR_MH + HDR_DH);
-	cairo_line_to(c, HDR_W, d->h);
+	cairo_line_to(c, HDR_W, d->h1);
 	cairo_set_source_col(c, &black);
+	cairo_stroke(c);
+
+	/* draw left header black border bottom */
+	cairo_new_path(c);
+	cairo_move_to(c, 0,     d->rs + d->h2);
+	cairo_line_to(c, 0,     d->rs);
+	cairo_line_to(c, HDR_W, d->rs);
+	cairo_line_to(c, HDR_W, d->rs + d->h2);
+	cairo_set_source_col(c, &black);
+	cairo_stroke(c);
+
+	/* draw left top border black bottom section */
+	cairo_new_path(c);
+	cairo_move_to(c, HDR_W, d->rs);
+	cairo_line_to(c, d->w, d->rs);
+	cairo_set_source_col(c, &lgray2);
 	cairo_stroke(c);
 
 	/* end of frawing */

@@ -10,7 +10,11 @@ struct disp {
 	unsigned int duration;
 	int w;
 	int h;
+	int h1;
+	int rs;
+	int h2;
 	struct list_head *base;
+	struct list_head *res;
 };
 
 struct color {

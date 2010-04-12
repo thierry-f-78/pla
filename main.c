@@ -214,6 +214,7 @@ int main(int argc, char *argv[])
 
 	d.duration = max - d.start;
 	d.base = &base;
+	d.res = &res;
 
 	/* if id s known */
 	if (nid > 0) {
