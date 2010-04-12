@@ -159,13 +159,13 @@ int main(int argc, char *argv[])
 		else if (strcmp(argv[i], "-id") == 0) {
 			i++;
 			if (i == argc) {
-				fprintf(stderr, "\nargument -i expect id\n");
+				fprintf(stderr, "\nargument -id expect id\n");
 				usage();
 				exit(1);
 			}
 			tmp = conv(argv[i], strlen(argv[i]));
 			if (tmp == -1) {
-				fprintf(stderr, "\nargument -i: invalid id\n");
+				fprintf(stderr, "\nargument -id: invalid id\n");
 				usage();
 				exit(1);
 			}
