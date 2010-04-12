@@ -415,28 +415,31 @@ void pla_cairo_task(cairo_t *c, int ps, struct task *t, struct disp *d)
 		cairo_fill_preserve(c);
 	}
 
-	/* y for displaying id */
-	y1 = ps + TASK_BORD + center_offset;
-	y2 = ps + DAY_H - TASK_BORD + center_offset;
+	if (d->display_id == 1) {
 
-	/* select font and get */
-	cairo_select_font_face (c, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-	cairo_set_font_size (c, ( y2 - y1 ) );
+		/* y for displaying id */
+		y1 = ps + TASK_BORD + center_offset;
+		y2 = ps + DAY_H - TASK_BORD + center_offset;
 
-	/* compute center of text */
-	snprintf(buf, 10, "%d", t->id);
-	cairo_text_extents (c, buf, &exts);
-	x = x1 + 3.0f;
-	y = ( y1 + ((y2-y1)/2) )  -  ( ( exts.height / 2 ) + exts.y_bearing );
+		/* select font and get */
+		cairo_select_font_face (c, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+		cairo_set_font_size (c, ( y2 - y1 ) );
 
-	/* display text */
-	cairo_new_path(c);
-	cairo_move_to(c, x, y);
-	cairo_set_source_col(c, &white);
-	cairo_text_path(c, buf);
-	cairo_fill_preserve(c);
-	cairo_set_source_col(c, &black);
-	cairo_stroke(c);
+		/* compute center of text */
+		snprintf(buf, 10, "%d", t->id);
+		cairo_text_extents (c, buf, &exts);
+		x = x1 + 3.0f;
+		y = ( y1 + ((y2-y1)/2) )  -  ( ( exts.height / 2 ) + exts.y_bearing );
+
+		/* display text */
+		cairo_new_path(c);
+		cairo_move_to(c, x, y);
+		cairo_set_source_col(c, &white);
+		cairo_text_path(c, buf);
+		cairo_fill_preserve(c);
+		cairo_set_source_col(c, &black);
+		cairo_stroke(c);
+	}
 
 }
 

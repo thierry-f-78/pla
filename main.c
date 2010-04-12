@@ -12,9 +12,10 @@ void usage(void) {
 		"\n"
 		"pla -i <filename> -o <filename> [-f (eps|png|svg|pdf)]\n"
 		"    [-s yyyymmdd] [-e yyyymmdd] [-id task_id] [-oid task_id]\n"
-		"    [-res]\n"
+		"    [-res] [-did]\n"
 		"\n"
 		"     -res: display resources\n"
+		"     -did: display id\n"
 		"\n"
 	);
 }
@@ -81,6 +82,7 @@ int main(int argc, char *argv[])
 	int ok;
 
 	d.display_res = 0;
+	d.display_id = 0;
 
 	/* argument parser */
 	for (i=1; i<argc; i++) {
@@ -203,6 +205,11 @@ int main(int argc, char *argv[])
 		/* display resource */
 		else if (strcmp(argv[i], "-res") == 0) {
 			d.display_res = 1;
+		}
+
+		/* display id */
+		else if (strcmp(argv[i], "-did") == 0) {
+			d.display_id = 1;
 		}
 
 		/* help */
