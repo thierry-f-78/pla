@@ -97,6 +97,9 @@ int pla_task_set_start_ymd(struct task *task, const char *start)
 {
 	struct tm tm;
 
+	if (strlen(start) != 8)
+		return -1;
+
 	memset(&tm, 0, sizeof(struct tm));
 
 	tm.tm_year = conv(start, 4) - 1900;
@@ -119,6 +122,9 @@ int pla_task_set_start_ymd(struct task *task, const char *start)
 int pla_task_set_start_ymdd(struct task *task, const char *start)
 {
 	struct tm tm;
+
+	if (strlen(start) != 10)
+		return -1;
 
 	if (start[4] != '-' || start[7] != '-')
 		return -1;
@@ -146,6 +152,9 @@ int pla_task_set_start_ymdh(struct task *task, const char *start)
 {
 	struct tm tm;
 
+	if (strlen(start) != 10)
+		return -1;
+
 	memset(&tm, 0, sizeof(struct tm));
 
 	tm.tm_year = conv(start, 4) - 1900;
@@ -172,6 +181,9 @@ int pla_task_set_start_ymdh(struct task *task, const char *start)
 int pla_task_set_start_ymdhh(struct task *task, const char *start)
 {
 	struct tm tm;
+
+	if (strlen(start) != 13)
+		return -1;
 
 	memset(&tm, 0, sizeof(struct tm));
 
