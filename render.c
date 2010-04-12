@@ -22,7 +22,7 @@
 #define NAME_TAB 20.0f
 #define PERCENT_DECAL 0.3f
 
-// #EDEDED
+/* #EDEDED */
 struct color lgray1 = {
 	0.92941176470588235294f,
 	0.92941176470588235294f,
@@ -47,20 +47,20 @@ struct color black_50p  = {
 	0.0f,
 	0.5f
 };
-struct color black  = {
+struct color black = {
 	0.0f,
 	0.0f,
 	0.0f,
 	1.0f
 };
-struct color white_80p  = {
+struct color white_80p = {
 	1.0f,
 	1.0f,
 	1.0f,
 	0.8f
 };
 
-struct color white  = {
+struct color white = {
 	1.0f,
 	1.0f,
 	1.0f,
