@@ -15,6 +15,7 @@ struct disp {
 	int h2;
 	struct list_head *base;
 	struct list_head *res;
+	int display_res;
 };
 
 struct color {

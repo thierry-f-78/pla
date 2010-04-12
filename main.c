@@ -12,6 +12,9 @@ void usage(void) {
 		"\n"
 		"pla -i <filename> -o <filename> [-f (eps|png|svg|pdf)]\n"
 		"    [-s yyyymmdd] [-e yyyymmdd] [-id task_id] [-oid task_id]\n"
+		"    [-res]\n"
+		"\n"
+		"     -res: display resources\n"
 		"\n"
 	);
 }

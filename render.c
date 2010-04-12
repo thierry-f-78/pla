@@ -749,7 +749,10 @@ void pla_draw(int mode, const char *file_out, struct disp *d)
 
 	/* calcule X et Y */
 	d->w = ( ( d->duration / 86400 ) * DAY_W ) + HDR_W;
-	d->h = ( nb *  DAY_H ) + HDR_DH + HDR_MH + SPACE + ( nb2 * DAY_H);
+	if (d->display_res == 1)
+		d->h = ( nb *  DAY_H ) + HDR_DH + HDR_MH + SPACE + ( nb2 * DAY_H);
+	else
+		d->h = ( nb *  DAY_H ) + HDR_DH + HDR_MH;
 	d->h1 = ( nb *  DAY_H ) + HDR_DH + HDR_MH;
 	d->rs = ( nb *  DAY_H ) + HDR_DH + HDR_MH + SPACE;
 	d->h2 = ( nb2 * DAY_H);
