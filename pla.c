@@ -25,6 +25,39 @@ int conv(const char *in, int len)
 	return ret;
 }
 
+struct res *pla_res_new(struct list_head *base, const char *name)
+{
+	struct res *r;
+
+	/* init */
+	r = calloc(sizeof(struct res), 1);
+	if (name != NULL)
+		r->name = strdup(name);
+
+	/* chain */
+	list_add_tail(&r->c, base);
+
+	return r;
+}
+
+void pla_res_set_name(struct res *res, const char *name)
+{
+	if (name != NULL)
+		res->name = strdup(name);
+}
+
+struct res *pla_res_get_by_name(struct list_head *base, const char *name)
+{
+	struct res *r;
+
+	list_for_each_entry(r, base, c) {
+		if (strcmp(r->name, name) == 0)
+			return r;
+	}
+
+	return NULL;
+}
+
 struct task *pla_task_new(struct list_head *base, const char *name, const char *color,
                           time_t start, unsigned int duration)
 {
@@ -198,6 +231,17 @@ void pla_task_add_child(struct task *task, struct task* child)
 {
 	list_add_tail(&child->_child, &task->childs);
 	child->parent = task;
+}
+
+void pla_task_add_res(struct task *task, struct res *res)
+{
+	task->res = realloc(task->res, ( task->nres + 1 ) * sizeof(struct res*));
+	if (task->res == NULL) {
+		fprintf(stderr, "realloc error");
+		exit(1);
+	}
+	task->res[task->nres] = res;
+	task->nres++;
 }
 
 void pla_task_add_dep(struct task *task, struct task* dep)

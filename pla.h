@@ -20,6 +20,16 @@ struct color {
 	double a;
 };
 
+struct res {
+
+	/* chain */
+	struct list_head c;
+
+	/* name */
+	char *name;
+
+};
+
 struct task {
 
 	/* chain */
@@ -41,12 +51,22 @@ struct task {
 	int ndep;
 	struct task **deps;
 
+	/* resources */
+	int nres;
+	struct res **res;
+
 	/* fils */
 	struct task *parent;
 	struct list_head _child;
 	struct list_head childs;
 };
 
+/* resource */
+struct res *pla_res_new(struct list_head *base, const char *name);
+void pla_res_set_name(struct res *res, const char *name);
+struct res *pla_res_get_by_name(struct list_head *base, const char *name);
+
+/* planning */
 struct task *pla_task_new(struct list_head *base, const char *name, const char *color,
                           time_t start, unsigned int duration);
 void pla_task_set_start(struct task *task, time_t start);
@@ -63,6 +83,7 @@ void pla_task_set_percent(struct task *task, unsigned int percent);
 int pla_task_set_percent_s(struct task *task, const char *percent);
 void pla_task_add_child(struct task *task, struct task *child);
 void pla_task_add_dep(struct task *task, struct task *dep);
+void pla_task_add_res(struct task *task, struct res *res);
 void pla_task_del_child(struct task *child);
 void pla_task_del_dep(struct task *dep);
 int pla_task_get_level(struct task *task);
