@@ -300,7 +300,8 @@ void pla_load(struct list_head *base, struct list_head *res, const char *file)
 
 	fclose(fp);
 
-	/* check unique id */
+	/* sort resources */
+	pla_res_sort(res);
 }
 
 void pla_store(struct list_head *base, const char *file)

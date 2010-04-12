@@ -363,3 +363,46 @@ struct task *pla_task_get_by_id(struct list_head *base, int id)
 
 	return NULL;
 }
+
+static 
+int pla_res_sort_func(const void *a, const void *b)
+{
+	const struct res *aa;
+	const struct res *bb;
+
+	aa = *(const struct res **)a;
+	bb = *(const struct res **)b;
+
+	return strcmp(aa->name, bb->name);;
+}
+
+void pla_res_sort(struct list_head *base)
+{
+	struct res *t;
+	struct res **st;
+	int n;
+	int i;
+
+	/* count entries */
+	n=0;
+	list_for_each_entry(t, base, c)
+		n++;
+	
+	/* memoire pour le qsort */
+	st = malloc(sizeof(struct res *) * n);
+	i = 0;
+	list_for_each_entry(t, base, c) {
+		st[i] = t;
+		i++;
+	}
+
+	/* tri */
+	qsort(st, n, sizeof(struct res *), pla_res_sort_func);
+
+	/* clean list */
+	INIT_LIST_HEAD(base);
+
+	/* fill list */
+	for (i=0; i<n; i++)
+		list_add_tail(&st[i]->c, base);
+}

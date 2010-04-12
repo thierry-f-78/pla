@@ -70,6 +70,7 @@ struct task {
 struct res *pla_res_new(struct list_head *base, const char *name);
 void pla_res_set_name(struct res *res, const char *name);
 struct res *pla_res_get_by_name(struct list_head *base, const char *name);
+void pla_res_sort(struct list_head *base);
 
 /* planning */
 struct task *pla_task_new(struct list_head *base, const char *name, const char *color,
