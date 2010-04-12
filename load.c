@@ -7,7 +7,7 @@
 
 #define BUFSIZE 1024
 
-void pla_load(struct list_head *base, const char *file)
+void pla_load(struct list_head *base, struct list_head *res, const char *file)
 {
 	FILE *fp;
 	char buf[BUFSIZE];
@@ -16,6 +16,7 @@ void pla_load(struct list_head *base, const char *file)
 	char *value;
 	struct task *t = NULL;
 	struct task *tt = NULL;
+	struct res *r;
 	char *error;
 	int line = 0;
 	int id;
@@ -260,6 +261,24 @@ void pla_load(struct list_head *base, const char *file)
 				exit(1);
 			}
 			pla_task_add_dep(t, tt);
+		}
+
+		/* resource */
+		else if (strcmp(attr, "res") == 0) {
+			if (t == NULL) {
+				fprintf(stderr, "bad file format at line %d: task expected\n", line);
+				exit(1);
+			}
+
+			/* get resource */
+			r = pla_res_get_by_name(res, value);
+
+			/* not found: new resource */
+			if (r == NULL)
+				r = pla_res_new(res, value);
+
+			/* add resource */
+			pla_task_add_res(t, r);
 		}
 
 		/* unknown keyword */

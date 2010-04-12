@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
 	int mode = 0;
 	struct disp d;
 	struct list_head base = LIST_HEAD_INIT(base);
+	struct list_head res = LIST_HEAD_INIT(res);
 	struct task *t;
 	time_t max;
 	int i;
@@ -180,7 +181,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* loda planning */
-	pla_load(&base, in);
+	pla_load(&base, &res, in);
 
 	/* recherche la date la plus petite */
 	d.start = -1;
