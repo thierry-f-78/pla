@@ -10,12 +10,13 @@
 void usage(void) {
 	fprintf(stderr,
 		"\n"
-		"pla -i <filename> -o <filename> [-f (eps|png|svg|pdf)]\n"
+		"pla -i <filename> [-o <filename>] [-f (eps|png|svg|pdf)]\n"
 		"    [-s yyyymmdd] [-e yyyymmdd] [-id task_id] [-oid task_id]\n"
-		"    [-res] [-did]\n"
+		"    [-res] [-did] [-gid]\n"
 		"\n"
-		"     -res: display resources\n"
-		"     -did: display id\n"
+		"    -res: display resources\n"
+		"    -did: display id\n"
+		"    -gid: return first free id\n"
 		"\n"
 	);
 }
@@ -80,6 +81,7 @@ int main(int argc, char *argv[])
 	int *oid = NULL;
 	int tmp;
 	int ok;
+	int first_id = 0;
 
 	d.display_res = 0;
 	d.display_id = 0;
@@ -212,6 +214,11 @@ int main(int argc, char *argv[])
 			d.display_id = 1;
 		}
 
+		/* return first free id */
+		else if (strcmp(argv[i], "-gid") == 0) {
+			first_id = 1;
+		}
+
 		/* help */
 		else if (strcmp(argv[i], "-h") == 0) {
 			usage();
@@ -234,7 +241,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	if (out == NULL) {
+	if (out == NULL && first_id == 0) {
 		fprintf(stderr, "output file expected\n");
 		usage();
 		exit(1);
@@ -242,6 +249,12 @@ int main(int argc, char *argv[])
 
 	/* loda planning */
 	pla_load(&base, &res, in);
+
+	/* return first free id */
+	if (first_id == 1) {
+		printf("%d\n", pla_get_first_id(&base));
+		exit(0);
+	}
 
 	/* oid */
 	if (noid > 0) {

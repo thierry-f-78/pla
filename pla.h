@@ -98,6 +98,7 @@ int pla_task_get_level(struct task *task);
 int pla_task_get_order(struct list_head *base, struct task *t);
 void pla_task_update_date(struct task *task);
 struct task *pla_task_get_by_id(struct list_head *base, int id);
+int pla_get_first_id(struct list_head *base);
 
 /* utils */
 int conv(const char *in, int len);
