@@ -361,7 +361,7 @@ int main(int argc, char *argv[])
 
 	/* auto select mode if needed */
 	if (mode == 0) {
-		p = strchr(out, '.');
+		p = strrchr(out, '.');
 		if (p == NULL)
 			mode = 1; 
 		else if (strcasecmp(p, ".png") == 0)
