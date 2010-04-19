@@ -600,7 +600,7 @@ void pla_cairo_disp_res(cairo_t *c, int ps, struct res *r, struct disp *d)
 		cairo_line_to(c, x2, y2);
 		cairo_line_to(c, x1, y2);
 		cairo_line_to(c, x1, y1);
-		cairo_set_source_col(c, &defcol);
+		cairo_set_source_col(c, &t->color);
 		cairo_fill(c);
 
 		/* draw black border */
