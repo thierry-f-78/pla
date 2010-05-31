@@ -231,6 +231,15 @@ void pla_load(struct list_head *base, struct list_head *res, const char *file)
 			pla_task_set_color(t, value);
 		}
 
+		/* couleur de fond */
+		else if (strcmp(attr, "bg") == 0) {
+			if (t == NULL) {
+				fprintf(stderr, "bad file format at line %d: task expected\n", line);
+				exit(1);
+			}
+			pla_task_set_bg(t, value);
+		}
+
 		/* percent */
 		else if (strcmp(attr, "percent") == 0) {
 			if (t == NULL) {
@@ -299,6 +308,26 @@ void pla_load(struct list_head *base, struct list_head *res, const char *file)
 	}
 
 	fclose(fp);
+
+	/* update dependencies on background color
+	 * default color is unherited from parent
+	 * else, color is white
+	 */
+	list_for_each_entry(t, base, c) {
+
+		/* if backgroud already set, next entry */
+		if (t->bg_isset == 1)
+			continue;
+
+		/* check for parent existency and parent bg color is set */
+		if (t->parent != NULL && t->parent->bg_isset == 1)
+			memcpy(&t->bg, &t->parent->bg, sizeof(struct color));
+
+		/* set default color */
+		else
+			pla_task_set_bg(t, "#ffffff");
+	}
+
 
 	/* sort resources */
 	pla_res_sort(res);
