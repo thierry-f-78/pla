@@ -307,6 +307,39 @@ void pla_cairo_head(cairo_t *c, int ps, struct task *t, struct disp *d)
 }
 
 static
+void pla_cairo_task_background(cairo_t *c, int ps, struct task *t, struct disp *d)
+{
+	double x1;
+	double x2;
+	double y1;
+	double y2;
+
+	/* update dates */
+	pla_task_update_date(t);
+
+	/* affiche - t - on ? */
+	if ( !( (t->start >= d->start && t->start <= d->start + d->duration) ||
+	        (t->start + t->duration >= d->start && t->start + t->duration <= d->start + d->duration) ) )
+		return;
+
+	/* calcule le départ */
+	x1 = HDR_W;
+	x2 = d->w;
+	y1 = ps;
+	y2 = ps + DAY_H;
+
+	/* draw carré */
+	cairo_new_path(c);
+	cairo_move_to(c, x1, y1);
+	cairo_line_to(c, x2, y1);
+	cairo_line_to(c, x2, y2);
+	cairo_line_to(c, x1, y2);
+	cairo_line_to(c, x1, y1);
+	cairo_set_source_col(c, &t->bg);
+	cairo_fill(c);
+}
+
+static
 void pla_cairo_task(cairo_t *c, int ps, struct task *t, struct disp *d)
 {
 	double x1;
@@ -702,6 +735,19 @@ void pla_cairo_heads(cairo_t *c, struct disp *d) {
 }
 
 static
+void pla_cairo_tasks_background(cairo_t *c, struct disp *d) {
+	struct task *t;
+	int ps;
+
+	/* compte le nombre d'éléments a afficher */
+	ps = HDR_DH + HDR_MH;
+	list_for_each_entry(t, d->base, c) {
+		pla_cairo_task_background(c, ps, t, d);
+		ps += DAY_H;
+	}
+}
+
+static
 void pla_cairo_tasks(cairo_t *c, struct disp *d) {
 	struct task *t;
 	int ps;
@@ -856,6 +902,16 @@ void pla_draw(int mode, const char *file_out, struct disp *d)
 	cairo_line_to(c, HDR_W, d->rs + d->h2);
 	cairo_set_source_col(c, &lgray1);
 	cairo_fill(c);
+
+	/* clip drawing zone */
+	cairo_rectangle(c, HDR_W, HDR_MH + HDR_DH, d->w, d->h1);
+	cairo_clip(c);
+
+	/*  draw task and dependecies */
+	pla_cairo_tasks_background(c, d);
+
+	/* unclip */
+	cairo_reset_clip(c);
 
 	/* vertical gray week-end and days "fériés" */
 	pla_cairo_day_feries(c, d);
