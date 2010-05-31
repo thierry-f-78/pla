@@ -45,6 +45,8 @@ struct task {
 	int id;
 	char *name;
 	struct color color;
+	struct color bg;
+	int bg_isset;
 
 	/* durée */
 	time_t start;
@@ -87,6 +89,7 @@ int pla_task_set_duration_sh(struct task *task, const char *duration);
 void pla_task_set_duration_d(struct task *task, unsigned int duration);
 int pla_task_set_duration_sd(struct task *task, const char *duration);
 void pla_task_set_color(struct task *task, const char *color);
+void pla_task_set_bg(struct task *task, const char *color);
 void pla_task_set_percent(struct task *task, unsigned int percent);
 int pla_task_set_percent_s(struct task *task, const char *percent);
 void pla_task_add_child(struct task *task, struct task *child);

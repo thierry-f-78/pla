@@ -352,6 +352,11 @@ void pla_task_set_color(struct task *task, const char *color)
 	convert_rgba_hex(color, 0xff, &task->color);
 	 
 }
+void pla_task_set_bg(struct task *task, const char *color)
+{
+	convert_rgba_hex(color, 0xff, &task->bg);
+	task->bg_isset = 1;
+}
 struct task *pla_task_get_by_id(struct list_head *base, int id)
 {
 	struct task *t;
