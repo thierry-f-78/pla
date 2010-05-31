@@ -839,7 +839,7 @@ void pla_draw(int mode, const char *file_out, struct disp *d)
 	cairo_set_source_col(c, &lgray2);
 	cairo_fill(c);
 
-	/* draw left header background top */
+	/* draw left task header background */
 	cairo_new_path(c);
 	cairo_move_to(c, 0,     d->h1);
 	cairo_line_to(c, 0,     HDR_MH + HDR_DH);
@@ -848,7 +848,7 @@ void pla_draw(int mode, const char *file_out, struct disp *d)
 	cairo_set_source_col(c, &lgray1);
 	cairo_fill(c);
 
-	/* draw left header background bottom */
+	/* draw left resources header background */
 	cairo_new_path(c);
 	cairo_move_to(c, 0,     d->rs + d->h2);
 	cairo_line_to(c, 0,     d->rs);
@@ -857,10 +857,16 @@ void pla_draw(int mode, const char *file_out, struct disp *d)
 	cairo_set_source_col(c, &lgray1);
 	cairo_fill(c);
 
-	/* draw elements */
+	/* vertical gray week-end and days "fériés" */
 	pla_cairo_day_feries(c, d);
+
+	/* month names */
 	pla_cairo_months(c, d);
+
+	/* days and vertical lines */
 	pla_cairo_days(c, d);
+
+	/* left headers content and horizontal lines */
 	pla_cairo_heads(c, d);
 
 	/* clip drawing zone */
@@ -925,7 +931,7 @@ void pla_draw(int mode, const char *file_out, struct disp *d)
 	cairo_set_source_col(c, &lgray2);
 	cairo_stroke(c);
 
-	/* end of frawing */
+	/* end of drawing */
 	cairo_close_path(c);
 	cairo_show_page(c);
 
