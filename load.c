@@ -4,6 +4,7 @@
 
 #include "list.h"
 #include "pla.h"
+#include "utf8.h"
 
 #define BUFSIZE 1024
 
@@ -99,6 +100,12 @@ void pla_load(struct list_head *base, struct list_head *res, const char *file)
 			/* verif des doublons */
 			if (pla_task_get_by_id(base, id) != NULL) {
 				fprintf(stderr, "task %d, line %d: this id already exists\n", id, line);
+				exit(1);
+			}
+
+			/* check if cvalue is utf8 */
+			if (utf8_is_valid(value) == 0) {
+				fprintf(stderr, "task %d, line %d: task name is not UTF8\n", id, line);
 				exit(1);
 			}
 
