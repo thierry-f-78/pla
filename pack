@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if test -z "$1"; then
+	echo "il faut un tag"
+	exit 1
+fi
+
+git archive --prefix=pla-$1/ $1 | gzip > pla-$1.tar.gz
