@@ -12,11 +12,12 @@ void usage(void) {
 		"\n"
 		"pla -i <filename> [-o <filename>] [-f (eps|png|svg|pdf)]\n"
 		"    [-s yyyymmdd] [-e yyyymmdd] [-id task_id] [-oid task_id]\n"
-		"    [-res] [-did] [-gid]\n"
+		"    [-res] [-did] [-gid] [-m <margin>]\n"
 		"\n"
 		"    -res: display resources\n"
 		"    -did: display id\n"
 		"    -gid: return first free id\n"
+		"    -m  : margin size. Default 150\n"
 		"\n"
 	);
 }
@@ -82,9 +83,11 @@ int main(int argc, char *argv[])
 	int tmp;
 	int ok;
 	int first_id = 0;
+	char *err;
 
 	d.display_res = 0;
 	d.display_id = 0;
+	d.margin = 150.0f;
 
 	/* argument parser */
 	for (i=1; i<argc; i++) {
@@ -202,6 +205,22 @@ int main(int argc, char *argv[])
 			oid = realloc(oid, (noid+1)*sizeof(int));
 			oid[noid] = tmp;
 			noid++;
+		}
+
+		/* margin size */
+		else if (strcmp(argv[i], "-m") == 0) {
+			i++;
+			if (i == argc) {
+				fprintf(stderr, "\nargument -m expect margin\n");
+				usage();
+				exit(1);
+			}
+			d.margin = strtod(argv[i], &err);
+			if (*err != '\0') {
+				fprintf(stderr, "\nargument -m is not numeric (%s)\n", argv[i]);
+				usage();
+				exit(1);
+			}
 		}
 
 		/* display resource */
