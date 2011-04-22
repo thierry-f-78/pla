@@ -6,11 +6,12 @@
 #include "pla.h"
 #include "load.h"
 #include "render.h"
+#include "render_txt.h"
 
 void usage(void) {
 	fprintf(stderr,
 		"\n"
-		"pla -i <filename> [-o <filename>] [-f (eps|png|svg|pdf)]\n"
+		"pla -i <filename> [-o <filename>] [-f (eps|png|svg|pdf|csv)]\n"
 		"    [-s yyyymmdd] [-e yyyymmdd] [-id task_id] [-oid task_id]\n"
 		"    [-res] [-did] [-gid] [-m <margin>]\n"
 		"\n"
@@ -151,7 +152,7 @@ int main(int argc, char *argv[])
 		else if (strcmp(argv[i], "-f") == 0) {
 			i++;
 			if (i == argc) {
-				fprintf(stderr, "\nargument -f expect format (eps, png, pdf or svg)\n");
+				fprintf(stderr, "\nargument -f expect format (eps, png, pdf, svg or csv)\n");
 				usage();
 				exit(1);
 			}
@@ -163,6 +164,8 @@ int main(int argc, char *argv[])
 				mode = 3;
 			else if (strcasecmp(argv[i], "pdf") == 0)
 				mode = 4;
+			else if (strcasecmp(argv[i], "csv") == 0)
+				mode = 5;
 		}
 
 		/* task id */
@@ -391,6 +394,8 @@ int main(int argc, char *argv[])
 			mode = 3;
 		else if (strcasecmp(p, ".pdf") == 0)
 			mode = 4;
+		else if (strcasecmp(p, ".csv") == 0)
+			mode = 5;
 		else {
 			fprintf(stderr, "Unknown extension file, output format expected. see -f\n");
 			usage();
@@ -398,7 +403,18 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	pla_draw(mode, out, &d);
+	switch (mode) {
+	case 1:
+	case 2:
+	case 3:
+	case 4:
+		pla_draw(mode, out, &d);
+		break;
+
+	case 5:
+		render_text(out, &d);
+		break;
+	}
 //	pla_store(&base, "out.pla");
 	return 0;
 }
