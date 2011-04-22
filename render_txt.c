@@ -8,7 +8,7 @@
 
 #define DATE_SIZE 64
 
-void render_text(const char *file_out, struct disp *d)
+void render_text(int mode, const char *file_out, struct disp *d)
 {
 	FILE *out;
 	int nb;
@@ -21,6 +21,13 @@ void render_text(const char *file_out, struct disp *d)
 	struct tm tm;
 	time_t stop;
 	int i;
+	char *start;
+	char *beg;
+	char *sep;
+	char *end;
+	char *final;
+	char *cbeg;
+	char *cend;
 
 	/* compte le nombre d'éléments a afficher */
 	nb = 0;
@@ -44,8 +51,29 @@ void render_text(const char *file_out, struct disp *d)
 		}
 	}
 
+	/* separator */
+	if (mode == 5) {
+		start = "";
+		beg = "";
+		sep = "\t";
+		end = "\n";
+		final = "";
+		cbeg = "*";
+		cend = "*";
+	}
+	else if (mode == 6) {
+		start = "\\begin{tabular}{|l|l|l|l|l|}\n";
+		beg = "\\hline\n";
+		sep = "&";
+		end = "\\\\\n";
+		final = "\\hline\n\\end{tabular}\n";
+		cbeg = "\\textbf{";
+		cend = "}";
+	}
+
 	/* headers */
-	fprintf(out, "Nom%sDémarré%sTerminé%sDurée%sAssigné à\n", "\t", "\t", "\t", "\t");
+	fprintf(out, "%s%sNom%sDÃ©marrÃ©%sTerminÃ©%sDurÃ©e%sAssignÃ© Ã %s",
+	        start, beg, sep, sep, sep, sep, end);
 
 	/* compte le nombre d'éléments a afficher */
 	list_for_each_entry(t, d->base, c) {
@@ -64,26 +92,36 @@ void render_text(const char *file_out, struct disp *d)
 
 		/* si on est une tache, on affiche la ligne qui va bien */
 		if (t->childs.next == &t->childs) {
-			fprintf(out, "%s%s%s%s%s%s%.1f%s",
-			        t->name, "\t", datestart, "\t", datestop, "\t", duree, "\t");
+
+			fprintf(out, "%s%s%s%s%s%s%s%.1f%s",
+			        beg, t->name, sep, datestart, sep, datestop, sep, duree, sep);
 			for (i=0; i<t->nres; i++) {
 				if (i+1 < t->nres)
 					fprintf(out, "%s, ", t->res[i]->name);
 				else
 					fprintf(out, "%s", t->res[i]->name);
 			}
-			fprintf(out, "\n");
+			fprintf(out, "%s", end);
 		}
 
 		/* on affiche un titre */
 		else {
-			fprintf(out, "**%s**%s%s%s%s%s%.1f\n",
-			        t->name, "\t", datestart, "\t", datestop, "\t", duree);
-		}
 
+			fprintf(out, "%s%s%s%s%s%s%s%s%s%s%s%s%s%.1f%s%s",
+			        cbeg, t->name, cend,
+			        sep, 
+			        cbeg, datestart, cend,
+			        sep, 
+			        cbeg, datestop, cend,
+			        sep,
+			        cbeg, duree, cend,
+			        end
+			);
+		}
 	}
 
 	/* end */
+	fprintf(out, "%s", final);
 	fflush(out);
 	fclose(out);
 }

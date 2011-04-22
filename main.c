@@ -11,7 +11,7 @@
 void usage(void) {
 	fprintf(stderr,
 		"\n"
-		"pla -i <filename> [-o <filename>] [-f (eps|png|svg|pdf|csv)]\n"
+		"pla -i <filename> [-o <filename>] [-f (eps|png|svg|pdf|csv|tex)]\n"
 		"    [-s yyyymmdd] [-e yyyymmdd] [-id task_id] [-oid task_id]\n"
 		"    [-res] [-did] [-gid] [-m <margin>]\n"
 		"\n"
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
 		else if (strcmp(argv[i], "-f") == 0) {
 			i++;
 			if (i == argc) {
-				fprintf(stderr, "\nargument -f expect format (eps, png, pdf, svg or csv)\n");
+				fprintf(stderr, "\nargument -f expect format (eps, png, pdf, svg, csv or tex)\n");
 				usage();
 				exit(1);
 			}
@@ -165,6 +165,8 @@ int main(int argc, char *argv[])
 			else if (strcasecmp(argv[i], "pdf") == 0)
 				mode = 4;
 			else if (strcasecmp(argv[i], "csv") == 0)
+				mode = 5;
+			else if (strcasecmp(argv[i], "tex") == 0)
 				mode = 5;
 		}
 
@@ -396,6 +398,8 @@ int main(int argc, char *argv[])
 			mode = 4;
 		else if (strcasecmp(p, ".csv") == 0)
 			mode = 5;
+		else if (strcasecmp(p, ".tex") == 0)
+			mode = 6;
 		else {
 			fprintf(stderr, "Unknown extension file, output format expected. see -f\n");
 			usage();
@@ -412,7 +416,8 @@ int main(int argc, char *argv[])
 		break;
 
 	case 5:
-		render_text(out, &d);
+	case 6:
+		render_text(mode, out, &d);
 		break;
 	}
 //	pla_store(&base, "out.pla");
