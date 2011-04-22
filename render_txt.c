@@ -50,11 +50,6 @@ void render_text(const char *file_out, struct disp *d)
 	/* compte le nombre d'éléments a afficher */
 	list_for_each_entry(t, d->base, c) {
 
-		/* affiche - t - on ? */
-		if ( !( (t->start >= d->start && t->start <= d->start + d->duration) ||
-		        (t->start + t->duration >= d->start && t->start + t->duration <= d->start + d->duration) ) )
-			continue;
-
 		/* on calcule la date start */
 		localtime_r(&t->start, &tm);
 		strftime(datestart, DATE_SIZE, "%d %B", &tm);
