@@ -458,7 +458,7 @@ void pla_cairo_task(cairo_t *c, int ps, struct task *t, struct disp *d)
 		cairo_set_font_size (c, ( y2 - y1 ) );
 
 		/* compute center of text */
-		snprintf(buf, 10, "%d", t->id);
+		snprintf(buf, 10, "%s", t->id);
 		cairo_text_extents (c, buf, &exts);
 		x = x1 + 3.0f;
 		y = ( y1 + ((y2-y1)/2) )  -  ( ( exts.height / 2 ) + exts.y_bearing );

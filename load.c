@@ -18,9 +18,8 @@ void pla_load(struct list_head *base, struct list_head *res, const char *file)
 	struct task *t = NULL;
 	struct task *tt = NULL;
 	struct res *r;
-	char *error;
 	int line = 0;
-	int id;
+	char *id;
 
 	/* open file */
 	fp = fopen(file, "r");
@@ -90,22 +89,34 @@ void pla_load(struct list_head *base, struct list_head *res, const char *file)
 		/* nouvelle tache */
 		if (attr[0] == '[') {
 
-			/* convert task id */
-			id = strtol(attr+1, &error, 10);
-			if (*error != ']') {
-				fprintf(stderr, "bad file format at line %d: number expected\n", line);
+			/* get task id */
+			p = attr + 1;
+			while (1) {
+				if (*p == '\0') {
+					fprintf(stderr, "bad file format at line %d: expect word\n", line);
+					exit(1);
+				}
+				else if (*p == ']' && *(p+1) == '\0')
+					break;
+				p++;
+			}
+			id = malloc(p - attr + 3);
+			if (id == NULL) {
+				fprintf(stderr, "malloc failed\n");
 				exit(1);
 			}
+			memcpy(id, attr + 1, p - attr - 1);
+			id[p - attr - 1] = '\0';
 
 			/* verif des doublons */
 			if (pla_task_get_by_id(base, id) != NULL) {
-				fprintf(stderr, "task %d, line %d: this id already exists\n", id, line);
+				fprintf(stderr, "task '%s', line %d: this id already exists\n", id, line);
 				exit(1);
 			}
 
 			/* check if cvalue is utf8 */
 			if (utf8_is_valid(value) == 0) {
-				fprintf(stderr, "task %d, line %d: task name is not UTF8\n", id, line);
+				fprintf(stderr, "task '%s', line %d: task name is not UTF8\n", id, line);
 				exit(1);
 			}
 
@@ -187,8 +198,19 @@ void pla_load(struct list_head *base, struct list_head *res, const char *file)
 
 		/* nouvelle tache */
 		if (attr[0] == '[') {
-			id = strtol(attr+1, &error, 10);
-			t = pla_task_get_by_id(base, id);
+
+			/* get task id */
+			p = attr + 1;
+			while (1) {
+				if (*p == '\0') {
+					fprintf(stderr, "bad file format at line %d: expect word\n", line);
+					exit(1);
+				}
+				else if (*p == ']' && *(p+1) == '\0')
+					break;
+				p++;
+			}
+			t = pla_task_get_by_id_n(base, attr + 1, p - attr - 1);
 			if (t == NULL) {
 				fprintf(stderr, "strange error: id does not exists at line %d\n", line);
 				exit(1);
@@ -265,8 +287,7 @@ void pla_load(struct list_head *base, struct list_head *res, const char *file)
 				fprintf(stderr, "bad file format at line %d: task expected\n", line);
 				exit(1);
 			}
-			id = strtol(value, &error, 10);
-			tt = pla_task_get_by_id(base, id);
+			tt = pla_task_get_by_id(base, value);
 			if (tt == NULL) {
 				fprintf(stderr, "error: child id does not exists at line %d\n", line);
 				exit(1);
@@ -280,8 +301,7 @@ void pla_load(struct list_head *base, struct list_head *res, const char *file)
 				fprintf(stderr, "bad file format at line %d: task expected\n", line);
 				exit(1);
 			}
-			id = strtol(value, &error, 10);
-			tt = pla_task_get_by_id(base, id);
+			tt = pla_task_get_by_id(base, value);
 			if (tt == NULL) {
 				fprintf(stderr, "error: dep id does not exists at line %d\n", line);
 				exit(1);
@@ -360,7 +380,7 @@ void pla_store(struct list_head *base, const char *file)
 		localtime_r(&t->start, &tm);
 
 		/* new task */
-		fprintf(fp, "[%d] %s\n", t->id, t->name);
+		fprintf(fp, "[%s] %s\n", t->id, t->name);
 
 		/* save start time */
 		fprintf(fp, "\tstart %04d-%02d-%02d %02d\n",
@@ -380,11 +400,11 @@ void pla_store(struct list_head *base, const char *file)
 
 		/* save deps */
 		for (i=0; i<t->ndep; i++)
-			fprintf(fp, "\tdep %d\n", t->deps[i]->id);
+			fprintf(fp, "\tdep %s\n", t->deps[i]->id);
 
 		/* save childrens */
 		list_for_each_entry(tt, &t->childs, _child)
-			fprintf(fp, "\tchild %d\n", tt->id);
+			fprintf(fp, "\tchild %s\n", tt->id);
 
 		/* end */
 		fprintf(fp, "\n");

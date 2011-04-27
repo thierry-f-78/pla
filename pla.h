@@ -43,7 +43,7 @@ struct task {
 	struct list_head c;
 
 	/* task */
-	int id;
+	char *id;
 	char *name;
 	struct color color;
 	struct color bg;
@@ -101,8 +101,9 @@ void pla_task_del_dep(struct task *dep);
 int pla_task_get_level(struct task *task);
 int pla_task_get_order(struct list_head *base, struct task *t);
 void pla_task_update_date(struct task *task);
-struct task *pla_task_get_by_id(struct list_head *base, int id);
-int pla_get_first_id(struct list_head *base);
+struct task *pla_task_get_by_id(struct list_head *base, const char *id);
+struct task *pla_task_get_by_id_n(struct list_head *base, const char *id, int len);
+/* int pla_get_first_id(struct list_head *base); */
 
 /* utils */
 int conv(const char *in, int len);

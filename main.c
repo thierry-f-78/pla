@@ -13,11 +13,10 @@ void usage(void) {
 		"\n"
 		"pla -i <filename> [-o <filename>] [-f (eps|png|svg|pdf|csv|tex)]\n"
 		"    [-s yyyymmdd] [-e yyyymmdd] [-id task_id] [-oid task_id]\n"
-		"    [-res] [-did] [-gid] [-m <margin>]\n"
+		"    [-res] [-did] [-m <margin>]\n"
 		"\n"
 		"    -res: display resources\n"
 		"    -did: display id\n"
-		"    -gid: return first free id\n"
 		"    -m  : margin size. Default 150\n"
 		"\n"
 	);
@@ -45,7 +44,7 @@ time_t convert_yyymmdd(const char *date)
 }
 
 static inline
-void oid_add(int **oid, int *noid, int id)
+void oid_add(char ***oid, int *noid, char *id)
 {
 	int i;
 
@@ -78,10 +77,9 @@ int main(int argc, char *argv[])
 	time_t start = -1;
 	time_t end = -1;
 	int nid = 0;
-	int *id = NULL;
+	char **id = NULL;
 	int noid = 0;
-	int *oid = NULL;
-	int tmp;
+	char **oid = NULL;
 	int ok;
 	int first_id = 0;
 	char *err;
@@ -178,16 +176,10 @@ int main(int argc, char *argv[])
 				usage();
 				exit(1);
 			}
-			tmp = conv(argv[i], strlen(argv[i]));
-			if (tmp == -1) {
-				fprintf(stderr, "\nargument -id: invalid id\n");
-				usage();
-				exit(1);
-			}
 
 			/* add id */
-			id = realloc(id, (nid+1)*sizeof(int));
-			id[nid] = tmp;
+			id = realloc(id, (nid+1)*sizeof(char *));
+			id[nid] = argv[i];
 			nid++;
 		}
 
@@ -199,16 +191,10 @@ int main(int argc, char *argv[])
 				usage();
 				exit(1);
 			}
-			tmp = conv(argv[i], strlen(argv[i]));
-			if (tmp == -1) {
-				fprintf(stderr, "\nargument -oid: invalid id\n");
-				usage();
-				exit(1);
-			}
 
 			/* add oid */
-			oid = realloc(oid, (noid+1)*sizeof(int));
-			oid[noid] = tmp;
+			oid = realloc(oid, (noid+1)*sizeof(char *));
+			oid[noid] = argv[i];
 			noid++;
 		}
 
@@ -236,11 +222,6 @@ int main(int argc, char *argv[])
 		/* display id */
 		else if (strcmp(argv[i], "-did") == 0) {
 			d.display_id = 1;
-		}
-
-		/* return first free id */
-		else if (strcmp(argv[i], "-gid") == 0) {
-			first_id = 1;
 		}
 
 		/* help */
@@ -274,19 +255,13 @@ int main(int argc, char *argv[])
 	/* loda planning */
 	pla_load(&base, &res, in);
 
-	/* return first free id */
-	if (first_id == 1) {
-		printf("%d\n", pla_get_first_id(&base));
-		exit(0);
-	}
-
 	/* oid */
 	if (noid > 0) {
 
 		/* check childs */
 		list_for_each_entry(t, &base, c)
 			for (i=0; i<noid; i++)
-				if (t->id == oid[i])
+				if (strcpy(t->id, oid[i])==0)
 					list_for_each_entry(tt, &t->childs, _child)
 						oid_add(&oid, &noid, tt->id);
 
