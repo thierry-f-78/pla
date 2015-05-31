@@ -698,7 +698,7 @@ void pla_cairo_months(cairo_t *c, struct disp *d) {
 	int ps;
 	struct tm tm;
 	int m_mem = -1;
-	int start;
+	int start = 0;
 
 	ps = d->margin;
 	for(r = d->start; r < d->start + d->duration; r += 86400) {
@@ -860,6 +860,9 @@ void pla_draw(int mode, const char *file_out, struct disp *d)
 	case 4:
 		s = cairo_pdf_surface_create_for_stream(cairo_wr, out, d->w, d->h);
 		break;
+
+	default:
+		abort();
 	}
 
 	/* create cairo */

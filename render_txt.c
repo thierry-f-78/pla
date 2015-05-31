@@ -80,6 +80,8 @@ void render_text(int mode, const char *file_out, struct disp *d)
 		cbeg = "\\textbf{";
 		cend = "}";
 	}
+	else
+		abort();
 
 	/* headers */
 	fprintf(out, "%s%sNom%sDémarré%sTerminé%sDurée%sAssigné à%s",
