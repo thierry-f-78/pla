@@ -1,5 +1,30 @@
-LDFLAGS = -lcairo -lpixman-1 -lm
-CFLAGS = -Wall -g -O0 -I/usr/include/cairo
+PKG_CONFIG = $(shell which pkg-config)
+INC_CAIRO =
+LIB_CAIRO =
+
+CFLAGS = -Wall -g -O2
+LDFLAGS = -lm
+
+ifneq ($(INC_CAIRO),)
+  CFLAGS += $(INC_CAIRO)
+else
+  ifneq ($(PKG_CONFIG),)
+    CFLAGS += $(shell $(PKG_CONFIG) --cflags cairo)
+  else
+    CFLAGS += -I/usr/include/cairo
+  endif
+endif
+
+ifneq ($(LIB_CAIRO),)
+  LDFLAGS += $(LIB_CAIRO)
+else
+  ifneq ($(PKG_CONFIG),)
+    LDFLAGS += $(shell $(PKG_CONFIG) --libs cairo)
+  else
+    LDFLAGS += -lcairo
+  endif
+endif
+
 OBJS = render.o render_txt.o pla.o utils.o main.o load.o utf8.o 
 
 pla: $(OBJS)
