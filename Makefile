@@ -6,7 +6,7 @@ CFLAGS = -Wall -g -O2
 LDFLAGS = -lm
 
 ifneq ($(INC_CAIRO),)
-  CFLAGS += $(INC_CAIRO)
+  CFLAGS += -I$(INC_CAIRO)
 else
   ifneq ($(PKG_CONFIG),)
     CFLAGS += $(shell $(PKG_CONFIG) --cflags cairo)
@@ -16,7 +16,7 @@ else
 endif
 
 ifneq ($(LIB_CAIRO),)
-  LDFLAGS += $(LIB_CAIRO)
+  LDFLAGS += -l$(LIB_CAIRO)
 else
   ifneq ($(PKG_CONFIG),)
     LDFLAGS += $(shell $(PKG_CONFIG) --libs cairo)
