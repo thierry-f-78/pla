@@ -7,10 +7,11 @@
  * 2 of the License.
  *
  */
+#include "pla.h"
 
 #ifndef __RENDER_H__
 #define __RENDER_H__
 
-void pla_draw(int mode, const char *file_out, struct disp *d);
+void pla_draw(int mode, const char *file_out, struct disp *d, enum language lng);
 
 #endif /* __RENDER_H__ */

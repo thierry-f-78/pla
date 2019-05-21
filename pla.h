@@ -15,6 +15,11 @@
 
 #include "list.h"
 
+enum language {
+	french = 0,
+	english = 1,
+};
+
 struct disp {
 	time_t start;
 	unsigned int duration;

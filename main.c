@@ -23,7 +23,7 @@ void usage(void) {
 		"\n"
 		"pla -i <filename> [-o <filename>] [-f (eps|png|svg|pdf|csv|tex)]\n"
 		"    [-s yyyymmdd] [-e yyyymmdd] [-id task_id] [-oid task_id]\n"
-		"    [-res] [-did] [-m <margin>]\n"
+		"    [-res] [-did] [-m <margin>] -l (en|fr)\n"
 		"\n"
 		"    -res: display resources\n"
 		"    -did: display id\n"
@@ -93,6 +93,7 @@ int main(int argc, char *argv[])
 	int ok;
 	int first_id = 0;
 	char *err;
+	enum language lng = french;
 
 	d.display_res = 0;
 	d.display_id = 0;
@@ -154,6 +155,19 @@ int main(int argc, char *argv[])
 				exit(1);
 			}
 			end += 86400;
+		}
+		/* language */
+		else if (strcmp(argv[i], "-l") == 0) {
+			i++;
+			if (i == argc) {
+				fprintf(stderr, "\nargument -l expect format (en or fr)\n");
+				usage();
+				exit(1);
+			}
+			/**/ if (strcasecmp(argv[i], "en") == 0)
+				lng = english;
+			else if (strcasecmp(argv[i], "fr") == 0)
+				lng = french;
 		}
 
 		/* format */
@@ -397,7 +411,7 @@ int main(int argc, char *argv[])
 	case 2:
 	case 3:
 	case 4:
-		pla_draw(mode, out, &d);
+		pla_draw(mode, out, &d, lng);
 		break;
 
 	case 5:

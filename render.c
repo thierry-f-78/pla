@@ -19,7 +19,7 @@
 #include <cairo-svg.h>
 
 #include "utils.h"
-#include "pla.h"
+#include "render.h"
 
 #define DAY_W 16.0f
 #define DAY_H 13.0f
@@ -180,7 +180,9 @@ void pla_cairo_day(cairo_t *c, int ps, int day, struct disp *d)
 
 }
 
-static char *str_mois[] = {
+static char *str_mois[][12] = {
+	{
+	//French
 	"Janvier",
 	"Février",
 	"Mars",
@@ -193,18 +195,34 @@ static char *str_mois[] = {
 	"Octore",
 	"Novembre",
 	"Décembre"
+	},
+	{
+	//English
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December"
+	}
 };
 
 static
-const char *get_mois(int mois) {
+const char *get_mois(int mois, enum language lng) {
 	if (mois >= 0 && mois <= 11)
-		return str_mois[mois];
+		return str_mois[lng][mois];
 	else
 		return "Unknown month";
 }
 
 static
-void pla_cairo_month(cairo_t *c, int start, int stop, int mois, struct disp *d)
+void pla_cairo_month(cairo_t *c, int start, int stop, int mois, struct disp *d, enum language lng)
 {
 	cairo_text_extents_t exts;
 	double x;
@@ -235,8 +253,9 @@ void pla_cairo_month(cairo_t *c, int start, int stop, int mois, struct disp *d)
 	 *
 	 */
 
+	const char * month_text = get_mois(mois, lng);
 	/* compute center of text */
-	cairo_text_extents (c, get_mois(mois), &exts);
+	cairo_text_extents (c, month_text, &exts);
 	x = ( start + ( (stop-start) / 2 ) )       -  ( ( exts.width  / 2 ) + exts.x_bearing );
 	y = ( HDR_MH / 2 ) - ( ( exts.height / 2 ) + exts.y_bearing );
 
@@ -247,7 +266,7 @@ void pla_cairo_month(cairo_t *c, int start, int stop, int mois, struct disp *d)
 	/* display text */
 	cairo_new_path(c);
 	cairo_move_to(c, x, y);
-	cairo_show_text(c, get_mois(mois));
+	cairo_show_text(c, month_text);
 	cairo_set_source_col(c, &black);
 	cairo_stroke(c);
 
@@ -693,7 +712,7 @@ void pla_cairo_days(cairo_t *c, struct disp *d) {
 }
 
 static
-void pla_cairo_months(cairo_t *c, struct disp *d) {
+void pla_cairo_months(cairo_t *c, struct disp *d, enum language lng) {
 	time_t r;
 	int ps;
 	struct tm tm;
@@ -708,7 +727,7 @@ void pla_cairo_months(cairo_t *c, struct disp *d) {
 
 			/* on dessine l'ancien mois */
 			if (m_mem != -1)
-				pla_cairo_month(c, start, ps, m_mem, d);
+				pla_cairo_month(c, start, ps, m_mem, d, lng);
 
 			/* on note le debut du nouveau mois */
 			start = ps;
@@ -720,7 +739,7 @@ void pla_cairo_months(cairo_t *c, struct disp *d) {
 	}
 
 	/* le dernier mois pas complet */
-	pla_cairo_month(c, start, ps, m_mem, d);
+	pla_cairo_month(c, start, ps, m_mem, d, lng);
 }
 
 static
@@ -794,7 +813,7 @@ void pla_cairo_res(cairo_t *c, struct disp *d) {
 	}
 }
 
-void pla_draw(int mode, const char *file_out, struct disp *d)
+void pla_draw(int mode, const char *file_out, struct disp *d, enum language lng)
 {
 	cairo_surface_t *s;
 	cairo_t *c;
@@ -929,7 +948,7 @@ void pla_draw(int mode, const char *file_out, struct disp *d)
 	pla_cairo_day_feries(c, d);
 
 	/* month names */
-	pla_cairo_months(c, d);
+	pla_cairo_months(c, d, lng);
 
 	/* days and vertical lines */
 	pla_cairo_days(c, d);
