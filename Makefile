@@ -28,7 +28,7 @@ endif
 OBJS = render.o render_txt.o pla.o utils.o main.o load.o utf8.o 
 
 pla: $(OBJS)
-	$(CC) -o pla $(LDFLAGS) $(OBJS)
+	$(CC) -o pla $(OBJS) $(LDFLAGS)
 
 clean: 
 	rm -f pla $(OBJS)
