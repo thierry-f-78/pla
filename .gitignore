@@ -1,0 +1,9 @@
+*.eps
+*.png
+*.svg
+*.pdf
+*.csv
+*.tex
+
+pla
+ *.o
