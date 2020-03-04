@@ -18,6 +18,14 @@
 
 #define BUFSIZE 1024
 
+char *rtrim(char *s)
+{
+    char* back = s + strlen(s);
+    while ((*--back) == ' ' );
+    *(back+1) = '\0';
+    return s;
+}
+
 void pla_load(struct list_head *base, struct list_head *res, const char *file)
 {
 	FILE *fp;
@@ -203,7 +211,7 @@ void pla_load(struct list_head *base, struct list_head *res, const char *file)
 			p++;
 		}
 
-		
+
 		/**************************** TRAITEMENT *************************/
 
 		/* nouvelle tache */
@@ -254,7 +262,7 @@ void pla_load(struct list_head *base, struct list_head *res, const char *file)
 			if (t == NULL) {
 				fprintf(stderr, "bad file format at line %d: task expected\n", line);
 				exit(1);
-			}	
+			}
 			if (pla_task_set_duration_sh(t, value) < 0) {
 				fprintf(stderr, "bad duration format at line %d\n", line);
 				exit(1);
@@ -327,11 +335,11 @@ void pla_load(struct list_head *base, struct list_head *res, const char *file)
 			}
 
 			/* get resource */
-			r = pla_res_get_by_name(res, value);
+			r = pla_res_get_by_name(res, rtrim(value));
 
 			/* not found: new resource */
 			if (r == NULL)
-				r = pla_res_new(res, value);
+				r = pla_res_new(res, rtrim(value));
 
 			/* add resource */
 			pla_task_add_res(t, r);
@@ -403,7 +411,7 @@ void pla_store(struct list_head *base, const char *file)
 		fprintf(fp, "\tpercent %u\n", t->percent);
 
 		/* save color */
-		fprintf(fp, "\tcolor #%02x%02x%02x\n", 
+		fprintf(fp, "\tcolor #%02x%02x%02x\n",
 		        (unsigned int)(t->color.r * 255),
 		        (unsigned int)(t->color.g * 255),
 		        (unsigned int)(t->color.b * 255));
