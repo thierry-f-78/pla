@@ -433,3 +433,78 @@ void pla_res_sort(struct list_head *base)
 	for (i=0; i<n; i++)
 		list_add_tail(&st[i]->c, base);
 }
+
+/* top is the next available slot in the visited stack
+ * return 0 if no loop, otherwise return 1
+ */
+int pla_has_cycle_r(struct task **visited, int top, struct task *task, struct task **cycle_task) {
+	int i;
+	struct task *t;
+
+	/* search task in visited stack */
+	for (i = 0; i < top; i++) {
+		if (visited[i] == task) {
+			return 1;
+		}
+	}
+
+	/* push node in the visited stack */
+	visited[top] = task;
+
+	/* browse childrens */
+	list_for_each_entry(t, &task->childs, _child) {
+		if (pla_has_cycle_r(visited, top + 1, t, cycle_task) == 1) {
+			if (*cycle_task == NULL) {
+				*cycle_task = task;
+			}
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+struct task *pla_has_cycle(struct list_head *base) {
+	struct task *t;
+	int nodes;
+	struct task **visited;
+	int processed;
+	struct task *cycle_task;
+
+	/* count total of nodes and total of orphan nodes */
+	nodes = 0;
+	list_for_each_entry(t, base, c) {
+		nodes++;
+	}
+
+	/* allocate and init memory */
+	visited = calloc(sizeof(struct task *), nodes);
+	if (visited == NULL) {
+		fprintf(stderr, "out of memory errror.\n");
+		exit(1);
+	}
+
+	/* check cycle for each orphan nodes */
+	processed = 0;
+	cycle_task = NULL;
+	list_for_each_entry(t, base, c) {
+		if (t->parent == NULL) {
+			if (pla_has_cycle_r(visited, 0, t, &cycle_task) == 1) {
+				return cycle_task;
+			}
+			processed++;
+		}
+	}
+
+	/* if there are no nodes processed, it indicates a loop
+	 * because there are no start node. Return the first task
+	 * of the list.
+	 */
+	if (processed == 0) {
+		list_for_each_entry(t, base, c) {
+			return t;
+		}
+	}
+
+	return NULL;
+}

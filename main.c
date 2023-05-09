@@ -94,6 +94,7 @@ int main(int argc, char *argv[])
 	int first_id = 0;
 	char *err;
 	enum language lng = french;
+	struct task *cycle_task;
 
 	d.display_res = 0;
 	d.display_id = 0;
@@ -278,6 +279,13 @@ int main(int argc, char *argv[])
 
 	/* loda planning */
 	pla_load(&base, &res, in);
+
+	/* check loops */
+	cycle_task = pla_has_cycle(&base);
+	if (cycle_task != NULL) {
+		fprintf(stderr, "loop detectd in the graph close node %s\n", cycle_task->id);
+		exit(1);
+	}
 
 	/* oid */
 	if (noid > 0) {

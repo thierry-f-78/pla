@@ -118,6 +118,7 @@ int pla_task_get_order(struct list_head *base, struct task *t);
 void pla_task_update_date(struct task *task);
 struct task *pla_task_get_by_id(struct list_head *base, const char *id);
 struct task *pla_task_get_by_id_n(struct list_head *base, const char *id, int len);
+struct task *pla_has_cycle(struct list_head *base);
 /* int pla_get_first_id(struct list_head *base); */
 
 /* utils */
