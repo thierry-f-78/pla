@@ -121,9 +121,9 @@ void render_text(int mode, const char *file_out, struct disp *d)
 
 			fprintf(out, "%s%s%s%s%s%s%s%s%s%s%s%s%s%.1f%s%s",
 			        cbeg, t->name, cend,
-			        sep, 
+			        sep,
 			        cbeg, datestart, cend,
-			        sep, 
+			        sep,
 			        cbeg, datestop, cend,
 			        sep,
 			        cbeg, duree, cend,

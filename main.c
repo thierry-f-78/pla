@@ -385,7 +385,7 @@ int main(int argc, char *argv[])
 	/* if start is set */
 	if (start != -1)
 		d.start = start;
-	
+
 	/* if end is set */
 	if (end != -1)
 		d.duration = end - d.start;
@@ -394,7 +394,7 @@ int main(int argc, char *argv[])
 	if (mode == 0) {
 		p = strrchr(out, '.');
 		if (p == NULL)
-			mode = 1; 
+			mode = 1;
 		else if (strcasecmp(p, ".png") == 0)
 			mode = 1;
 		else if (strcasecmp(p, ".eps") == 0)

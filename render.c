@@ -453,7 +453,7 @@ void pla_cairo_task(cairo_t *c, int ps, struct task *t, struct disp *d)
 
 		/*  */
 		pla_task_update_date(t);
-	
+
 		/* calcule le départ */
 		x1 = d->margin + ( ( t->start - d->start ) / 86400.0f * DAY_W );
 		x2 = d->margin + ( ( ( t->start + t->duration ) - d->start ) / 86400.0f * DAY_W );
@@ -888,7 +888,7 @@ void pla_draw(int mode, const char *file_out, struct disp *d, enum language lng)
 	c = cairo_create(s);
 
 	cairo_set_line_width(c, 0.2);
-	
+
 	/* draw background */
 	cairo_new_path(c);
 	cairo_move_to(c, 0, 0);

@@ -93,38 +93,38 @@ int next_utf8(const char *s, unsigned int *c) {
 			 * 11110 > 0xef <= 0xf7
 			 */
 			switch (*p & 0xf8) {
-	
+
 			/* 0.... > 0x00 <= 0x7f */
 			case 0x00 ... 0x7f:
 				*c = *p;
 				chars = 1;
 				break;
-	
+
 			/* 10... > 0x7f <= 0xbf interdit */
 			case 0x80 ... 0xbf:
 				return -1;
-	
+
 			/* 110.. > 0xbf <= 0xdf */
 			case 0xc0 ... 0xdf:
 				dec = 1;
 				chars = 2;
 				*c = *p & 0x1f;
 				continue;
-	
+
 			/* 1110. > 0xdf <= 0xef */
 			case 0xe0 ... 0xef:
 				dec = 2;
 				chars = 3;
 				*c = *p & 0x0f;
 				continue;
-	
+
 			/* 11110 > 0xef <= 0xf7 */
 			case 0xf0 ... 0xf7:
 				dec = 3;
 				chars = 4;
 				*c = *p & 0x07;
 				continue;
-	
+
 			default:
 				return -1;
 			}

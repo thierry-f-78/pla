@@ -39,7 +39,7 @@ void convert_rgba_hex(const char *hex, unsigned char alpha, struct color *out)
 
 	if (hex[0] == '#')
 		hex++;
-	
+
 	if (strlen(hex) != 6) {
 		out->r = 0;
 		out->g = 0;
@@ -47,7 +47,7 @@ void convert_rgba_hex(const char *hex, unsigned char alpha, struct color *out)
 		out->a = 0;
 		return;
 	}
-	
+
 	out->r = ( hex_to_int(hex[0]) * 16.0f ) + hex_to_int(hex[1]);
 	out->g = ( hex_to_int(hex[2]) * 16.0f ) + hex_to_int(hex[3]);
 	out->b = ( hex_to_int(hex[4]) * 16.0f ) + hex_to_int(hex[5]);

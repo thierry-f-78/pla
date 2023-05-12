@@ -24,14 +24,14 @@ int conv(const char *in, int len)
 
 	if (len > 19)
 		return -1;
-	
+
 	memcpy(buf, in, len);
 	buf[len] = 0;
 
 	ret = strtol(buf, &error, 10);
 	if (*error != 0)
 		return -1;
-	
+
 	return ret;
 }
 
@@ -203,7 +203,7 @@ int pla_task_set_start_ymdhh(struct task *task, const char *start)
 	tm.tm_year = conv(start, 4) - 1900;
 	if (tm.tm_year < 0)
 		return -1;
-           
+
 	tm.tm_mon = conv(start + 5, 2) - 1;
 	if (tm.tm_mon < 0)
 		return -1;
@@ -299,7 +299,7 @@ void pla_task_add_dep(struct task *task, struct task* dep)
 		fprintf(stderr, "realloc error");
 		exit(1);
 	}
-	task->deps[task->ndep] = dep;	
+	task->deps[task->ndep] = dep;
 	task->ndep++;
 }
 
@@ -360,7 +360,7 @@ int pla_task_get_level(struct task *t)
 void pla_task_set_color(struct task *task, const char *color)
 {
 	convert_rgba_hex(color, 0xff, &task->color);
-	 
+
 }
 void pla_task_set_bg(struct task *task, const char *color)
 {
@@ -391,7 +391,7 @@ struct task *pla_task_get_by_id_n(struct list_head *base, const char *id, int le
 	return NULL;
 }
 
-static 
+static
 int pla_res_sort_func(const void *a, const void *b)
 {
 	const struct res *aa;
@@ -414,7 +414,7 @@ void pla_res_sort(struct list_head *base)
 	n=0;
 	list_for_each_entry(t, base, c)
 		n++;
-	
+
 	/* memoire pour le qsort */
 	st = malloc(sizeof(struct res *) * n);
 	i = 0;
