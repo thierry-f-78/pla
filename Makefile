@@ -3,7 +3,7 @@ INC_CAIRO =
 LIB_CAIRO =
 
 CFLAGS = -Wall -g -O2
-LDFLAGS = -lm
+LDLIBS = -lm
 
 ifneq ($(INC_CAIRO),)
   CFLAGS += -I$(INC_CAIRO)
@@ -16,19 +16,19 @@ else
 endif
 
 ifneq ($(LIB_CAIRO),)
-  LDFLAGS += -l$(LIB_CAIRO)
+  LDLIBS += -l$(LIB_CAIRO)
 else
   ifneq ($(PKG_CONFIG),)
-    LDFLAGS += $(shell $(PKG_CONFIG) --libs cairo)
+    LDLIBS += $(shell $(PKG_CONFIG) --libs-only-l cairo)
+    LDFLAGS += $(shell $(PKG_CONFIG) --libs-only-L cairo)
   else
-    LDFLAGS += -lcairo
+    LDLIBS += -lcairo
   endif
 endif
 
 OBJS = render.o render_txt.o pla.o utils.o main.o load.o utf8.o 
 
 pla: $(OBJS)
-	$(CC) -o pla $(LDFLAGS) $(OBJS)
 
 clean: 
 	rm -f pla $(OBJS)
